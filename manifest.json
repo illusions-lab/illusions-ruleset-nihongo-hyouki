@@ -1,0 +1,191 @@
+{
+  "$comment": "日本語表記（日本エディタースクール）に基づく校正ルールセット。",
+  "id": "com.illusions-lab.nihongo-hyouki",
+  "name": "Nihongo Hyouki",
+  "nameJa": "日本語表記",
+  "version": "0.1.0",
+  "engineApi": 1,
+  "license": "MIT",
+  "maintainerEmail": "rulesets@illusions.app",
+  "rulesetPrefix": "nh-",
+  "guidelines": [
+    {
+      "id": "nihongo-hyouki",
+      "nameJa": "日本語表記",
+      "publisherJa": "日本エディタースクール",
+      "year": 2014,
+      "license": "Proprietary",
+      "descriptionJa": "一般的な刊行物における日本語表記の基本事項を解説した実務基準書。"
+    }
+  ],
+  "rules": [
+    {
+      "ruleId": "nh-katakana-wi-we-wo",
+      "nameJa": "外来語の旧仮名（ヰ・ヱ・ヲ）使用禁止",
+      "descriptionJa": "外来語表記で旧仮名遣いの「ヰ」「ヱ」「ヲ」（固有名詞を除く）は使用しません。",
+      "guidelineId": "nihongo-hyouki",
+      "level": "L1",
+      "defaultConfig": { "enabled": true, "severity": "warning" },
+      "applicableModes": ["novel", "official", "blog", "academic", "sns"],
+      "docs": {
+        "positiveExample": "ウィスキーを飲む。ウェブサイトを開く。",
+        "negativeExample": "スヰフトの作品を読んだ。",
+        "sourceReference": "日本語表記（日本エディタースクール）第8章 外来語の表記 §3(1)"
+      }
+    },
+    {
+      "ruleId": "nh-katakana-di-du",
+      "nameJa": "外来語の「ヂ」「ヅ」使用禁止",
+      "descriptionJa": "外来語表記で「ヂ」「ヅ」（固有名詞を除く）は使用しません。「ジ」「ズ」と表記します。",
+      "guidelineId": "nihongo-hyouki",
+      "level": "L1",
+      "defaultConfig": { "enabled": true, "severity": "warning" },
+      "applicableModes": ["novel", "official", "blog", "academic", "sns"],
+      "docs": {
+        "positiveExample": "ジャズの演奏を聴いた。",
+        "negativeExample": "ヅカダンサーの公演があった。",
+        "sourceReference": "日本語表記（日本エディタースクール）第8章 外来語の表記 §3(1)"
+      }
+    },
+    {
+      "ruleId": "nh-katakana-small-ya-yu-yo",
+      "nameJa": "拗音「ヤ・ユ・ヨ」の大書き禁止",
+      "descriptionJa": "外来語表記の拗音に用いる「ヤ・ユ・ヨ」は小書き「ャ・ュ・ョ」にします。",
+      "guidelineId": "nihongo-hyouki",
+      "level": "L1",
+      "defaultConfig": { "enabled": true, "severity": "warning" },
+      "applicableModes": ["novel", "official", "blog", "academic", "sns"],
+      "docs": {
+        "positiveExample": "シャワーを浴びた。チョコレートを食べた。",
+        "negativeExample": "シヤワーを浴びた。チヨコレートを食べた。",
+        "sourceReference": "日本語表記（日本エディタースクール）第8章 外来語の表記 §3(2)②"
+      }
+    },
+    {
+      "ruleId": "nh-katakana-sokuon",
+      "nameJa": "促音「ツ」の大書き禁止（外来語）",
+      "descriptionJa": "外来語表記の促音（つまる音）は小書きの「ッ」を用います。大書きの「ツ」は不可です。",
+      "guidelineId": "nihongo-hyouki",
+      "level": "L1",
+      "defaultConfig": { "enabled": true, "severity": "warning" },
+      "applicableModes": ["novel", "official", "blog", "academic", "sns"],
+      "docs": {
+        "positiveExample": "バッグを持った。コップが割れた。",
+        "negativeExample": "バツグを持った。コツプが割れた。",
+        "sourceReference": "日本語表記（日本エディタースクール）第8章 外来語の表記 §3(2)①"
+      }
+    },
+    {
+      "ruleId": "nh-katakana-chouon-er-or",
+      "nameJa": "語末 -er/-or/-ar に相当する音は長音符「ー」で表記",
+      "descriptionJa": "英語語末の -er/-or/-ar などに当たる音は、原則として長音符「ー」を用いて表記します。",
+      "guidelineId": "nihongo-hyouki",
+      "level": "L1",
+      "defaultConfig": { "enabled": true, "severity": "warning" },
+      "applicableModes": ["novel", "official", "blog", "academic", "sns"],
+      "docs": {
+        "positiveExample": "ギターの音が響いた。マフラーを巻いた。",
+        "negativeExample": "ギタの音が響いた。マフラを巻いた。",
+        "sourceReference": "日本語表記（日本エディタースクール）第8章 外来語の表記 §3(2)④"
+      }
+    },
+    {
+      "ruleId": "nh-okurigana-okona-u",
+      "nameJa": "「行なう」→「行う」（送り仮名の本則）",
+      "descriptionJa": "「行なう」は旧規程の送り仮名です。「送り仮名の付け方」（1973年）の本則は「行う」です。",
+      "guidelineId": "nihongo-hyouki",
+      "level": "L1",
+      "defaultConfig": { "enabled": true, "severity": "warning" },
+      "applicableModes": ["novel", "official", "blog", "academic", "sns"],
+      "docs": {
+        "positiveExample": "検査を行う。",
+        "negativeExample": "検査を行なう。",
+        "sourceReference": "日本語表記（日本エディタースクール）第7章 送り仮名の付け方 §3(許容→本則) p.32"
+      }
+    },
+    {
+      "ruleId": "nh-okurigana-arawa-su",
+      "nameJa": "「著わす」「表わす」「現われる」→ 本則形",
+      "descriptionJa": "「著わす」「表わす」「現われる」は旧形です。「送り仮名の付け方」（1973年）の本則は「著す」「表す」「現れる」です。",
+      "guidelineId": "nihongo-hyouki",
+      "level": "L1",
+      "defaultConfig": { "enabled": true, "severity": "warning" },
+      "applicableModes": ["novel", "official", "blog", "academic", "sns"],
+      "docs": {
+        "positiveExample": "本を著す。感情を表す。",
+        "negativeExample": "本を著わす。感情を表わす。",
+        "sourceReference": "日本語表記（日本エディタースクール）第7章 送り仮名の付け方 §3 p.32"
+      }
+    },
+    {
+      "ruleId": "nh-okurigana-kotowa-ru",
+      "nameJa": "「断わる」→「断る」（送り仮名の本則）",
+      "descriptionJa": "「断わる」「賜わる」は旧形です。「送り仮名の付け方」（1973年）の本則は「断る」「賜る」です。",
+      "guidelineId": "nihongo-hyouki",
+      "level": "L1",
+      "defaultConfig": { "enabled": true, "severity": "warning" },
+      "applicableModes": ["novel", "official", "blog", "academic", "sns"],
+      "docs": {
+        "positiveExample": "依頼を断る。",
+        "negativeExample": "依頼を断わる。",
+        "sourceReference": "日本語表記（日本エディタースクール）第7章 送り仮名の付け方 §3 p.32"
+      }
+    },
+    {
+      "ruleId": "nh-kana-auxiliary-verb",
+      "nameJa": "補助動詞は仮名書き",
+      "descriptionJa": "「してあげる」「していただく」「してみる」「してしまう」など、補助動詞として使う「あげる・いただく・みる・しまう」等は仮名で書きます。",
+      "guidelineId": "nihongo-hyouki",
+      "level": "L1",
+      "defaultConfig": { "enabled": true, "severity": "warning" },
+      "applicableModes": ["novel", "official", "blog", "academic", "sns"],
+      "docs": {
+        "positiveExample": "本を読んでみる。宿題をやってしまう。",
+        "negativeExample": "本を読んで見る。",
+        "sourceReference": "日本語表記（日本エディタースクール）第3章 漢字の用い方 §1 p.9"
+      }
+    },
+    {
+      "ruleId": "nh-katakana-she-je",
+      "nameJa": "「シェ」「ジェ」（第1表の仮名）",
+      "descriptionJa": "原音の「シェ」「ジェ」は、慣用を除きカタカナで「シェ」「ジェ」と書きます（「セ」「ゼ」ではありません）。",
+      "guidelineId": "nihongo-hyouki",
+      "level": "L1",
+      "defaultConfig": { "enabled": true, "severity": "warning" },
+      "applicableModes": ["novel", "official", "blog", "academic", "sns"],
+      "docs": {
+        "positiveExample": "シェードを下げる。ジェットエンジンの音。",
+        "negativeExample": "シエードを下げる。",
+        "sourceReference": "日本語表記（日本エディタースクール）第8章 外来語の表記 §3(3)① p.39"
+      }
+    },
+    {
+      "ruleId": "nh-katakana-fa-fi-fe-fo",
+      "nameJa": "「ファ・フィ・フェ・フォ」（第1表の仮名）",
+      "descriptionJa": "原音の「ファ・フィ・フェ・フォ」は、慣用を除き「ファ・フィ・フェ・フォ」と書きます（「ハ・ヒ・ヘ・ホ」ではありません）。",
+      "guidelineId": "nihongo-hyouki",
+      "level": "L1",
+      "defaultConfig": { "enabled": true, "severity": "warning" },
+      "applicableModes": ["novel", "official", "blog", "academic", "sns"],
+      "docs": {
+        "positiveExample": "ファイルを開く。フィルムを現像する。",
+        "negativeExample": "フアイルを開く。",
+        "sourceReference": "日本語表記（日本エディタースクール）第8章 外来語の表記 §3(3)⑤ p.39"
+      }
+    },
+    {
+      "ruleId": "nh-katakana-ti-di",
+      "nameJa": "「ティ・ディ」（慣用を除く第1表の仮名）",
+      "descriptionJa": "原音の「ティ」「ディ」は、慣用を除き「ティ」「ディ」と書きます（「チ」「ジ」ではありません）。",
+      "guidelineId": "nihongo-hyouki",
+      "level": "L1",
+      "defaultConfig": { "enabled": true, "severity": "warning" },
+      "applicableModes": ["novel", "official", "blog", "academic", "sns"],
+      "docs": {
+        "positiveExample": "ティーカップを持つ。ディスプレイを見る。",
+        "negativeExample": "ボランテイアに参加したパーテイーの記録。",
+        "sourceReference": "日本語表記（日本エディタースクール）第8章 外来語の表記 §3(3)④ p.39"
+      }
+    }
+  ]
+}
