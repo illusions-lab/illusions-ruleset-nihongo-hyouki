@@ -12,6 +12,7 @@
  * 偽陽性回避:
  *   - 語頭の「ヤ・ユ・ヨ」（ヤード・ユニット等）は先行子音系仮名がないため対象外。
  *   - 直後2字以上のカタカナを要求することで、「ニヤリ」など短い語を除外。
+ *   - ニヤニヤ・チヤホヤ・シヤチホコ 等の和語擬態語・固有名詞は除外リストで対象外とする。
  */
 import type {
   LintIssue,
@@ -23,6 +24,24 @@ import type {
 
 // 子音系仮名（拗音構成に現れる）
 const CONSONANT_KANA = "シチジニヒミリギキビピ";
+
+// 和語擬態語・固有名詞等、大書きヤ/ユ/ヨが正当なカタカナ表記語（語全体で除外）
+const WORD_EXCLUSIONS = new Set([
+  "ニヤニヤ",
+  "チヤホヤ",
+  "シヤチホコ",
+]);
+
+/**
+ * 指定位置を含むカタカナ語（中黒も含む連語境界を許容）を抽出する。
+ */
+function extractKatakanaWord(text: string, pos: number): string {
+  let start = pos;
+  while (start > 0 && /[ァ-ヶー・]/.test(text[start - 1])) start--;
+  let end = pos;
+  while (end < text.length && /[ァ-ヶー・]/.test(text[end])) end++;
+  return text.slice(start, end);
+}
 
 const PAIRS: ReadonlyArray<{ pattern: RegExp; bigKana: string; smallKana: string }> = [
   {
@@ -55,22 +74,27 @@ export function createNhKatakanaSmallYaYuYo(ctx: RulesetContext, manifest: Rules
       if (!config.enabled) return [];
       const issues: LintIssue[] = [];
       for (const { pattern, bigKana, smallKana } of PAIRS) {
-        issues.push(
-          ...toolkit.regexReplace({
-            text,
-            pattern,
-            ruleId: this.id,
-            severity: config.severity,
-            message: `Use small ${smallKana} (not large ${bigKana}) for syllable in katakana loanword`,
-            messageJa: `日本語表記（日本エディタースクール）第8章に基づき、外来語の拗音には小書き「${smallKana}」を使用します（大書き「${bigKana}」は不可）。`,
-            replacement: (m) => `${m[1]}${smallKana}`,
-            fixLabelJa: `「${smallKana}」に修正`,
-            reference: {
-              standard: "外来語の表記（1991年内閣告示）",
-              section: "§3(2)②",
-            },
-          }),
-        );
+        const rawIssues = toolkit.regexReplace({
+          text,
+          pattern,
+          ruleId: this.id,
+          severity: config.severity,
+          message: `Use small ${smallKana} (not large ${bigKana}) for syllable in katakana loanword`,
+          messageJa: `日本語表記（日本エディタースクール）第8章に基づき、外来語の拗音には小書き「${smallKana}」を使用します（大書き「${bigKana}」は不可）。`,
+          replacement: (m) => `${m[1]}${smallKana}`,
+          fixLabelJa: `「${smallKana}」に修正`,
+          reference: {
+            standard: "外来語の表記（1991年内閣告示）",
+            section: "§3(2)②",
+          },
+        });
+        // 和語擬態語・固有名詞等の除外リストでフィルタリング
+        for (const issue of rawIssues) {
+          const word = extractKatakanaWord(text, issue.from);
+          if (!WORD_EXCLUSIONS.has(word)) {
+            issues.push(issue);
+          }
+        }
       }
       return toolkit.dedupe(issues).sort((a, b) => a.from - b.from);
     }

@@ -84,8 +84,8 @@
       "defaultConfig": { "enabled": true, "severity": "warning" },
       "applicableModes": ["novel", "official", "blog", "academic", "sns"],
       "docs": {
-        "positiveExample": "ギターの音が響いた。マフラーを巻いた。",
-        "negativeExample": "ギタの音が響いた。マフラを巻いた。",
+        "positiveExample": "ギターの音が響いた。スキャナーを使う。プリンターで印刷する。",
+        "negativeExample": "ギタの音が響いた。スキャナを使う。",
         "sourceReference": "日本語表記（日本エディタースクール）第8章 外来語の表記 §3(2)④"
       }
     },
@@ -141,14 +141,14 @@
       "applicableModes": ["novel", "official", "blog", "academic", "sns"],
       "docs": {
         "positiveExample": "本を読んでみる。宿題をやってしまう。",
-        "negativeExample": "本を読んで見る。",
+        "negativeExample": "やって見る。",
         "sourceReference": "日本語表記（日本エディタースクール）第3章 漢字の用い方 §1 p.9"
       }
     },
     {
       "ruleId": "nh-katakana-she-je",
       "nameJa": "「シェ」「ジェ」（第1表の仮名）",
-      "descriptionJa": "原音の「シェ」「ジェ」は、慣用を除きカタカナで「シェ」「ジェ」と書きます（「セ」「ゼ」ではありません）。",
+      "descriptionJa": "原音の「シェ」「ジェ」は、慣用を除きカタカナで「シェ」「ジェ」と書きます（「セ」「ゼ」ではありません）。固有名詞（シエラ・シエナ等）は例外とします。",
       "guidelineId": "nihongo-hyouki",
       "level": "L1",
       "defaultConfig": { "enabled": true, "severity": "warning" },
@@ -162,7 +162,7 @@
     {
       "ruleId": "nh-katakana-fa-fi-fe-fo",
       "nameJa": "「ファ・フィ・フェ・フォ」（第1表の仮名）",
-      "descriptionJa": "原音の「ファ・フィ・フェ・フォ」は、慣用を除き「ファ・フィ・フェ・フォ」と書きます（「ハ・ヒ・ヘ・ホ」ではありません）。",
+      "descriptionJa": "外来語表記の「フア・フイ・フエ・フオ」（大書き母音）を「ファ・フィ・フェ・フォ」（小書き母音）に修正します。",
       "guidelineId": "nihongo-hyouki",
       "level": "L1",
       "defaultConfig": { "enabled": true, "severity": "warning" },
@@ -185,6 +185,20 @@
         "positiveExample": "ティーカップを持つ。ディスプレイを見る。",
         "negativeExample": "ボランテイアに参加したパーテイーの記録。",
         "sourceReference": "日本語表記（日本エディタースクール）第8章 外来語の表記 §3(3)④ p.39"
+      }
+    },
+    {
+      "ruleId": "nh-kana-formal-noun",
+      "nameJa": "形式名詞「こと・もの・ところ・わけ」は仮名書き",
+      "descriptionJa": "形式名詞として用いる「事・物・所・訳」は、仮名で「こと・もの・ところ・わけ」と書きます。（L2：形態素解析）",
+      "guidelineId": "nihongo-hyouki",
+      "level": "L2",
+      "defaultConfig": { "enabled": true, "severity": "warning" },
+      "applicableModes": ["novel", "official", "blog", "academic", "sns"],
+      "docs": {
+        "positiveExample": "勉強することが大切だ。",
+        "negativeExample": "勉強する事が大切だ。",
+        "sourceReference": "日本語表記（日本エディタースクール）第3章 漢字の用い方 §1 p.9"
       }
     }
   ]

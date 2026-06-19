@@ -21,6 +21,7 @@ import { createNhKanaAuxiliaryVerb } from "./rules/nh-kana-auxiliary-verb";
 import { createNhKatakanaSheJe } from "./rules/nh-katakana-she-je";
 import { createNhKatakanaFaFiFeFo } from "./rules/nh-katakana-fa-fi-fe-fo";
 import { createNhKatakanaTiDi } from "./rules/nh-katakana-ti-di";
+import { createNhKanaFormalNoun } from "./rules/nh-kana-formal-noun";
 
 const manifest = manifestJson as RulesetModule["manifest"];
 
@@ -40,6 +41,7 @@ const ruleset: RulesetModule = {
       createNhKatakanaSheJe(ctx, manifest),
       createNhKatakanaFaFiFeFo(ctx, manifest),
       createNhKatakanaTiDi(ctx, manifest),
+      createNhKanaFormalNoun(ctx, manifest),
     ];
   },
 };

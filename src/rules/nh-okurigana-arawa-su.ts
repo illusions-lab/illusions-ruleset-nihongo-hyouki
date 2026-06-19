@@ -35,8 +35,8 @@ const PAIRS: ReadonlyArray<{ pattern: RegExp; correct: string; hint: string }> =
     hint: "「表わす」→「表す」",
   },
   {
-    // 現われる・現われた・現われ等
-    pattern: /現われ([るたてたら]?)/g,
+    // 現われる・現われた・現われて・現われれ（ば）・現われら等
+    pattern: /現われ([るたてれら]?)/g,
     correct: "現れ",
     hint: "「現われる」→「現れる」",
   },

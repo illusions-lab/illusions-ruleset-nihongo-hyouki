@@ -10,7 +10,10 @@
  * 偽陽性回避:
  *   - 語頭の「ツ」（ツアー・ツール等）は先行カタカナがないため対象外。
  *   - 「ヅ」は nh-katakana-di-du で別途対応。
- *   - 前後いずれもカタカナであることを条件とするため、和語での「つ」（平仮名）は対象外。
+ *   - 中黒「・」は lookbehind/lookahead から除外（連語・複合語の区切りは促音でない）。
+ *   - 直前がすでに小書き「ッ」の場合は除外（ピッツァ等のクラスター）。
+ *   - カツラ・マツダ・ウォルツ・ワルツ・ピッツァ・ピッツェリア 等の固有名詞・外来語を
+ *     単語レベルの除外リストで対象外とする。
  */
 import type {
   LintIssue,
@@ -20,9 +23,30 @@ import type {
   RulesetManifest,
 } from "illusions-lint-sdk";
 
-// カタカナ文字（ア〜ン＋小書き＋長音・中黒）に挟まれた大書き「ツ」を検出。
+// 中黒を除いたカタカナ文字のみでチェック（語内のツ）。
 // (?<=…) lookbehind はNode.js v10以降でサポート。
-const SOKUON_PATTERN = /(?<=[ァ-ヶー・])ツ(?=[ァ-ヶー・])/g;
+const SOKUON_PATTERN = /(?<=[ァ-ヶー])ツ(?=[ァ-ヶー])/g;
+
+// 正当なカタカナ語（語全体として除外するリスト）
+const WORD_EXCLUSIONS = new Set([
+  "カツラ",
+  "マツダ",
+  "ウォルツ",
+  "ワルツ",
+  "ピッツァ",
+  "ピッツェリア",
+]);
+
+/**
+ * 指定位置を含むカタカナ語（中黒を含む連語境界も許容）を抽出する。
+ */
+function extractKatakanaWord(text: string, pos: number): string {
+  let start = pos;
+  while (start > 0 && /[ァ-ヶー・]/.test(text[start - 1])) start--;
+  let end = pos;
+  while (end < text.length && /[ァ-ヶー・]/.test(text[end])) end++;
+  return text.slice(start, end);
+}
 
 export function createNhKatakanaSokuon(ctx: RulesetContext, manifest: RulesetManifest): LintRule {
   const meta = manifest.rules.find((r) => r.ruleId === "nh-katakana-sokuon");
@@ -34,7 +58,7 @@ export function createNhKatakanaSokuon(ctx: RulesetContext, manifest: RulesetMan
   class NhKatakanaSokuon extends AbstractL1Rule {
     lint(text: string, config: LintRuleConfig): LintIssue[] {
       if (!config.enabled) return [];
-      return toolkit.regexReplace({
+      const rawIssues = toolkit.regexReplace({
         text,
         pattern: SOKUON_PATTERN,
         ruleId: this.id,
@@ -47,6 +71,14 @@ export function createNhKatakanaSokuon(ctx: RulesetContext, manifest: RulesetMan
           standard: "外来語の表記（1991年内閣告示）",
           section: "§3(2)①",
         },
+      });
+
+      // 直前が「ッ」の場合（ピッツァ等）または語全体が除外リストにある場合を除去
+      return rawIssues.filter((issue) => {
+        if (issue.from > 0 && text[issue.from - 1] === "ッ") return false;
+        const word = extractKatakanaWord(text, issue.from);
+        if (WORD_EXCLUSIONS.has(word)) return false;
+        return true;
       });
     }
   }

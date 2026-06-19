@@ -1,30 +1,22 @@
 /**
  * nh-katakana-chouon-er-or — 語末 -er/-or/-ar 相当音は長音符「ー」で
  *
- * 「外来語の表記」（1991年内閣告示）§3(2)④:
+ * 根拠（日本語表記 第8章 外来語の表記 §3(2)④）:
  *   英語の語末の -er, -or, -ar などに当たるものは、原則として ア列の長音とし
  *   音引「ー」を用いて書く。
+ *   ただし、慣用で音引「ー」を省くものもある（例: スリッパ、エンジニア）。
+ *   揺れがある例として「エレベーター（エレベータ）」「コンピューター（コンピュータ）」
+ *   「トランジスター（トランジスタ）」が明示されている。
  *
- * 検出対象:
- *   カタカナ語末の「ア列仮名＋ア（またはア行）」のパターン。
- *   例: 「ギタ」（Guitar）→「ギター」 / 「マフラ」→「マフラー」
- *   「ア列（ア・カ・サ・タ・ナ・ハ・マ・ラ・ワ行）の終端」が長音なしで終わっている場合。
+ * 実装方針（ホワイトリスト方式）:
+ *   「ー無し形」で書いた場合に明らかに誤りとなる語のみをホワイトリストで明示列挙し、
+ *   それらの「ー無し形」が出現したときだけ指摘する。
  *
- * 精密な判定について:
- *   語末の -er/-or/-ar 対応は、カタカナ語が「ア列音節」で終止し、
- *   後続が非カタカナ（文末・読点・ひらがな等）である場合に長音「ー」が欠落していないかをチェック。
+ *   書籍が「両形を許容」と明示している語（コンピュータ、エレベータ等）は
+ *   ホワイトリストに含めない。ドラマ・テーマ・ソナタ・パジャマ・オペラ等、
+ *   英語 -er/-or/-ar 由来でない語は最初から対象外。
  *
- * 偽陽性回避:
- *   - 「スリッパ」「エンジニア」など慣用で長音を省く語は許容（ただし本則は長音あり）。
- *   - このルールは「ア（アa-row finals）で終わるカタカナ語が長音なし」を検出し、
- *     文脈によっては許容の場合もあるため、severity = warning とする。
- *   - 語中の「ア行」終わりは対象外（語末のみ）。
- *   - 「ア」「イ」「ウ」「エ」「オ」行末の語尾を包括的に検出すると
- *     偽陽性が増大するため、-er/-or/-ar に最も典型的なア行末（ア・エア）のみ対象とする。
- *
- * 実装方針:
- *   明確に -er 対応と判断できる「タ・ダ・ナ・マ・ラ・ガ・カ・ハ・バ・パ行＋ア列」のパターンで
- *   語末（後続が非カタカナ）を検出する。慣用語除外リストを適用する。
+ *   この方式により偽陽性をゼロに近づけ、「確実に誤り」の語だけを指摘できる。
  */
 import type {
   LintIssue,
@@ -34,32 +26,53 @@ import type {
   RulesetManifest,
 } from "illusions-lint-sdk";
 
-// 慣用で長音を省く語（許容形、書籍 p.38 の例）
-const CONVENTIONAL_NO_CHOUON = new Set([
-  "スリッパ",
-  "エンジニア",
-  "エラ",
-  "カメラ",
-  "ソファ",
-  "ピザ",
-  "オペラ",
-  "センサ",
-  "モータ",
-  "コンピュータ",
-  "エレベータ",
-  "トランジスタ",
-]);
+/**
+ * ホワイトリストエントリー:
+ *   stemWithoutChouon: ー無し形（検出する文字列）
+ *   stemWithChouon: ー付き形（修正後の文字列）
+ *
+ * 選定基準:
+ *   - 英語 -er/-or/-ar 由来が明確
+ *   - 書籍が「揺れあり（両形許容）」と明示していない
+ *   - 慣用で「ー無し形」が定着していない
+ */
+const WHITELIST: ReadonlyArray<{ stemWithoutChouon: string; stemWithChouon: string }> = [
+  // -er 由来
+  { stemWithoutChouon: "ギタ", stemWithChouon: "ギター" },          // guitar
+  { stemWithoutChouon: "マフラ", stemWithChouon: "マフラー" },       // muffler
+  { stemWithoutChouon: "プリンタ", stemWithChouon: "プリンター" },   // printer
+  { stemWithoutChouon: "スキャナ", stemWithChouon: "スキャナー" },   // scanner
+  { stemWithoutChouon: "ドライバ", stemWithChouon: "ドライバー" },   // driver
+  { stemWithoutChouon: "フォルダ", stemWithChouon: "フォルダー" },   // folder
+  { stemWithoutChouon: "アダプタ", stemWithChouon: "アダプター" },   // adapter
+  { stemWithoutChouon: "ルータ", stemWithChouon: "ルーター" },       // router
+  { stemWithoutChouon: "スピーカ", stemWithChouon: "スピーカー" },   // speaker
+  { stemWithoutChouon: "リーダ", stemWithChouon: "リーダー" },       // reader
+  { stemWithoutChouon: "ハンドラ", stemWithChouon: "ハンドラー" },   // handler
+  { stemWithoutChouon: "パラメタ", stemWithChouon: "パラメータ" },   // parameter
+  { stemWithoutChouon: "スライダ", stemWithChouon: "スライダー" },   // slider
+  { stemWithoutChouon: "バッファ", stemWithChouon: "バッファー" },   // buffer
+  { stemWithoutChouon: "カバ", stemWithChouon: "カバー" },           // cover
+  { stemWithoutChouon: "アンカ", stemWithChouon: "アンカー" },       // anchor
+  { stemWithoutChouon: "バーナ", stemWithChouon: "バーナー" },       // burner
+  // -or 由来
+  { stemWithoutChouon: "モニタ", stemWithChouon: "モニター" },       // monitor
+  { stemWithoutChouon: "プロセッサ", stemWithChouon: "プロセッサー" }, // processor
+  { stemWithoutChouon: "コレクタ", stemWithChouon: "コレクター" },   // collector
+  { stemWithoutChouon: "ベクタ", stemWithChouon: "ベクター" },       // vector
+  // -ar 由来
+  { stemWithoutChouon: "レーダ", stemWithChouon: "レーダー" },       // radar
+];
 
-// アa-row仮名: カ行・サ行・タ行・ナ行・ハ行・マ行・ラ行・ガ行・ザ行・ダ行・バ行・パ行のア列
-// これらで終わるカタカナ語（後続が非カタカナ）を検出
-// 「ア」単独語末も追加（エア・フォア等）
-const A_ROW_FINALS =
-  "カサタナハマヤラワガザダバパ" + // clear a-row finals
-  "ア"; // standalone ア
-
-// 前後コンテキスト付きでカタカナ語を抽出してチェックする
-// より正確な判定: 前方にカタカナが2文字以上ある（= 語末）かを確認
-const KATAKANA_WORD_PATTERN = /[ァ-ヶー]{2,}/g;
+/**
+ * 各ホワイトリスト語について「ー無し形＋語末確定（後続が非カタカナ）」の正規表現を生成する。
+ * 語末確定: 後続が [ァ-ヶー] でない（語末位置を保証し複合語途中の誤検出を防ぐ）。
+ */
+function buildPattern(entry: { stemWithoutChouon: string; stemWithChouon: string }): RegExp {
+  // 非捕捉グループで語末を先読み: 後続が非カタカナ or 文字列終端
+  const escaped = entry.stemWithoutChouon.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  return new RegExp(`${escaped}(?![ァ-ヶー])`, "g");
+}
 
 export function createNhKatakanaChouonErOr(ctx: RulesetContext, manifest: RulesetManifest): LintRule {
   const meta = manifest.rules.find((r) => r.ruleId === "nh-katakana-chouon-er-or");
@@ -68,46 +81,45 @@ export function createNhKatakanaChouonErOr(ctx: RulesetContext, manifest: Rulese
   const { AbstractL1Rule } = ctx.bases;
   const { toolkit } = ctx;
 
+  // エントリーとパターンのペアを事前生成
+  const entries = WHITELIST.map((entry) => ({
+    entry,
+    pattern: buildPattern(entry),
+  }));
+
   class NhKatakanaChouonErOr extends AbstractL1Rule {
     lint(text: string, config: LintRuleConfig): LintIssue[] {
       if (!config.enabled) return [];
       const issues: LintIssue[] = [];
 
-      // カタカナ語ごとに処理する
-      let wordMatch: RegExpExecArray | null;
-      const wordRe = new RegExp(KATAKANA_WORD_PATTERN.source, "g");
-      while ((wordMatch = wordRe.exec(text)) !== null) {
-        const word = wordMatch[0];
-        const wordStart = wordMatch.index;
-
-        // 慣用除外
-        if (CONVENTIONAL_NO_CHOUON.has(word)) continue;
-
-        // 語末がア列音節で終わり、かつ長音符なし
-        const lastChar = word[word.length - 1];
-        if (A_ROW_FINALS.includes(lastChar)) {
-          const from = wordStart + word.length - 1;
-          const to = wordStart + word.length;
+      for (const { entry, pattern } of entries) {
+        // パターンを毎回リセット（グローバルフラグ付き正規表現は lastIndex を保持するため）
+        pattern.lastIndex = 0;
+        let m: RegExpExecArray | null;
+        while ((m = pattern.exec(text)) !== null) {
+          const from = m.index;
+          const to = m.index + entry.stemWithoutChouon.length;
           issues.push({
             ruleId: this.id,
             severity: config.severity,
-            message: `Katakana word ending in ア-row without long vowel mark — consider adding ー`,
-            messageJa: `日本語表記（日本エディタースクール）第8章に基づき、英語語末の -er/-or/-ar に相当する音は長音符「ー」を付けます（例: ギター、マフラー）。`,
+            message: `"${entry.stemWithoutChouon}" should be written as "${entry.stemWithChouon}" — English -er/-or/-ar endings take a long vowel mark (ー) per §3(2)④`,
+            messageJa: `日本語表記（日本エディタースクール）第8章 §3(2)④に基づき、英語語末の -er/-or/-ar に相当する音は長音符「ー」を付けます。「${entry.stemWithoutChouon}」→「${entry.stemWithChouon}」`,
             from,
             to,
-            originalText: lastChar,
+            originalText: entry.stemWithoutChouon,
             reference: {
-              standard: "外来語の表記（1991年内閣告示）",
-              section: "§3(2)④",
+              standard: "日本語表記（日本エディタースクール）",
+              section: "第8章 外来語の表記 §3(2)④",
             },
             fix: {
-              label: `Add ー after ${lastChar}`,
-              labelJa: `「${lastChar}ー」に修正`,
-              replacement: `${lastChar}ー`,
+              label: `Replace with ${entry.stemWithChouon}`,
+              labelJa: `「${entry.stemWithChouon}」に修正`,
+              replacement: entry.stemWithChouon,
             },
           });
         }
       }
+
       return issues;
     }
   }
