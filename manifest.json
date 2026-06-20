@@ -4,7 +4,7 @@
   "name": "Nihongo Hyouki",
   "nameJa": "日本語表記",
   "publisherJa": "日本エディタースクール",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "engineApi": 1,
   "license": "MIT",
   "licenseUrl": "https://opensource.org/license/mit",
@@ -125,11 +125,9 @@
         "severity": "warning"
       },
       "applicableModes": [
-        "novel",
         "official",
         "blog",
-        "academic",
-        "sns"
+        "academic"
       ],
       "docs": {
         "positiveExample": "ギターの音が響いた。スキャナーを使う。プリンターで印刷する。",
@@ -148,11 +146,9 @@
         "severity": "warning"
       },
       "applicableModes": [
-        "novel",
         "official",
         "blog",
-        "academic",
-        "sns"
+        "academic"
       ],
       "docs": {
         "positiveExample": "検査を行う。",
@@ -171,11 +167,9 @@
         "severity": "warning"
       },
       "applicableModes": [
-        "novel",
         "official",
         "blog",
-        "academic",
-        "sns"
+        "academic"
       ],
       "docs": {
         "positiveExample": "本を著す。感情を表す。",
@@ -194,11 +188,9 @@
         "severity": "warning"
       },
       "applicableModes": [
-        "novel",
         "official",
         "blog",
-        "academic",
-        "sns"
+        "academic"
       ],
       "docs": {
         "positiveExample": "依頼を断る。",
@@ -217,11 +209,9 @@
         "severity": "warning"
       },
       "applicableModes": [
-        "novel",
         "official",
         "blog",
-        "academic",
-        "sns"
+        "academic"
       ],
       "docs": {
         "positiveExample": "本を読んでみる。宿題をやってしまう。",
@@ -309,11 +299,9 @@
         "severity": "warning"
       },
       "applicableModes": [
-        "novel",
         "official",
         "blog",
-        "academic",
-        "sns"
+        "academic"
       ],
       "docs": {
         "positiveExample": "勉強することが大切だ。",
@@ -332,11 +320,9 @@
         "severity": "warning"
       },
       "applicableModes": [
-        "novel",
         "official",
         "blog",
-        "academic",
-        "sns"
+        "academic"
       ],
       "docs": {
         "positiveExample": "プロジェクトが進んでいく。春が近づいてくる。",

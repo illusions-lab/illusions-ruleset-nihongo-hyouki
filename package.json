@@ -1,8 +1,8 @@
 {
-  "name": "illusions-ruleset-template",
-  "version": "0.3.0",
+  "name": "illusions-ruleset-nihongo-hyouki",
+  "version": "0.4.0",
   "private": false,
-  "description": "Template for developing an illusions 校正(lint) ruleset (1 repo = 1 ruleset).",
+  "description": "日本語表記（日本エディタースクール）に基づく illusions 校正ルールセット。",
   "type": "module",
   "license": "MIT",
   "engines": {
