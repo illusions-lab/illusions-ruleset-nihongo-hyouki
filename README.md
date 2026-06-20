@@ -1,124 +1,77 @@
-# illusions-ruleset-template
+# illusions-ruleset-nihongo-hyouki
 
-illusions 校正(lint)ルールセット開発用テンプレート。**1リポジトリ = 1ルールセット**。
+> illusions の校正ルールセット — **日本語表記ルールブック 第2版**（日本エディタースクール）
 
-このテンプレートを `Use this template` で複製し、自分の校正ルールセットを開発する。ビルド成果物
-（`dist/index.js` + `manifest.json`）を illusions の `~/.illusions/rulesets/<id>/` に置くと読み込まれる
-（Electron 版のみ。Web 版は本体同梱ルールのみ）。
+「漢字で書く？　仮名で書く？」「ベにする？　ヴェにする？」——文章を書いていてふと迷う
+**表記の揺れ**を、小説エディタ [illusions](https://illusions.app/) の自動校正でそろえます。
+カタカナ外来語の書き方や送り仮名など、現代日本語の標準的な表記法に沿った指摘を行います。
 
-## クイックスタート
+## このルールセットでできること
 
-```bash
-npm install
-npm run check     # typecheck + test + build
-```
+日本語は同じ言葉でもいくつもの書き方ができてしまうため、一つの文章の中で表記がバラついたり、
+古い形が残ったりしがちです。本ルールセットは、国の告示（常用漢字表・現代仮名遣い・送り仮名の
+付け方・外来語の表記）に基づく**「現代表記」の原則**に沿って、外来語のカタカナ表記・送り仮名・
+仮名書きすべき語などをチェックします。
 
-`dist/index.js` が生成される。`manifest.json` と一緒に配布する。
+## 収録ルール
 
-## ディレクトリ構成
+| ルール | 内容 | 例 |
+| --- | --- | --- |
+| 外来語の旧仮名（ヰ・ヱ・ヲ）禁止 | 固有名詞を除き使わない | `スヰフト` → `スウィフト` |
+| 外来語の「ヂ」「ヅ」禁止 | 「ジ」「ズ」と書く | `ヅカ` → `ズカ` |
+| 拗音「ヤ・ユ・ヨ」は小書き | 「ャ・ュ・ョ」にする | `シヤワー` → `シャワー` |
+| 促音「ツ」は小書き | 「ッ」にする | `バツグ` → `バッグ` |
+| 語末 -er/-or/-ar は長音符 | 原則「ー」を付ける | `スキャナ` → `スキャナー` |
+| 「行なう」→「行う」 | 送り仮名の本則 | `行なう` → `行う` |
+| 「著わす／表わす／現われる」 | 本則形に | `著わす` → `著す` |
+| 「断わる」→「断る」 | 送り仮名の本則 | `断わる` → `断る` |
+| 補助動詞は仮名書き | 「してみる」「してしまう」等 | `やって見る` → `やってみる` |
+| 「シェ」「ジェ」 | 慣用を除き第1表の仮名で | `シエード` → `シェード` |
+| 「ファ・フィ・フェ・フォ」 | 母音は小書き | `フアイル` → `ファイル` |
+| 「ティ・ディ」 | 慣用を除き第1表の仮名で | `パーテイー` → `パーティー` |
+| 形式名詞は仮名書き | 「こと・もの・ところ・わけ」 | `勉強する事` → `勉強すること` |
 
-```
-.
-├── manifest.json                 # ★ルールセットのメタ（package.json 的存在。コードを実行せず読める）
-├── package.json                  # npm メタ + ビルド/テストスクリプト
-├── tsconfig.json / tsup.config.ts / vitest.config.ts
-├── types/illusions-lint-sdk.d.ts # SDK 型契約（import type 用にベンダリング）
-├── src/
-│   ├── index.ts                  # default export: RulesetModule
-│   └── rules/<ruleId>.ts         # 各ルールの実装
-├── docs/
-│   ├── README.md                 # ドキュメントの書き方
-│   └── rules/<ruleId>.md         # ★1ルール=1ファイル。各ルールが何をするかを記述
-├── test/
-│   ├── test-kit.ts               # ローカルテスト用の RulesetContext
-│   └── <ruleId>.test.ts          # ゴールデン（positive→0 / negative→≥1）
-└── .github/workflows/            # CI（typecheck/test/build）+ Release（成果物添付）
-```
+各ルールの詳細は [`docs/rules/`](./docs/rules/) を参照してください。
 
-## ルールの書き方（要点）
+## 出典について — 『日本語表記ルールブック』
 
-- ルールセットは `RulesetModule` を **default export** する（`src/index.ts`）。
-- `manifest` は**純データ**。UI 一覧・`engineApi` 整合・隔離判定にコード非実行で使われる。
-- `manifest.maintainerEmail`（**必須**）= メンテナ連絡先。marketplace 収録・通知の送信先。
-- 各ルールの `applicableModes`（**必須**）= 自動有効化される校正モードのリスト
-  （`novel`/`official`/`blog`/`academic`/`sns`）。空配列は手動トグルのみ。詳細は [docs/README.md](./docs/README.md)。
-- `createRules(ctx)` は `ctx` から基底クラスと道具を受け取る:
-  - 基底: `ctx.bases.AbstractL1Rule` 等を `extends`。
-  - 道具: `ctx.toolkit.regexReplace` / `nfkc`（濁点合成）/ `detectUnits`（単位重複除去）など。
-    **車輪を再発明しない**。文字幅・濁点・旧字体は `nfkc` を優先（ハードコード変換表は避ける）。
-- **SDK は `import type` のみ**。`illusions-lint-sdk` から値を import しない（外部モジュールは実行時に解決
-  できない）。実体は必ず `ctx` 経由で受け取る。
+『日本語表記ルールブック』は、**日本エディタースクール**が刊行する、表記に迷ったときに引く
+ための実用ハンドブックです。表紙には「文章を書くとき　ふと迷ったら…」とあり、論文作成から
+社内・社外文書、Web・ブログまで、**幅広い書き手**に向けて編まれています。
 
-サンプル: `src/rules/sample-fw-exclaim.ts` と `src/index.ts` を参照。詳細な契約は illusions 本体の
-`docs/ruleset/authoring.md` を参照。
+本書は次の12章で構成され、現在の日本で一般的な表記法＝**「現代表記」**（常用漢字表・現代仮名遣い・
+送り仮名の付け方などに準拠）の原則と注意点を整理しています。
 
-## 辞典に依存するルール
+1. 原稿作成と表記の扱い　2. 文体について　3. 漢字の用い方　4. 漢字の字体　5. 人名用漢字の使用
+6. 現代仮名遣いの注意点　7. 送り仮名の付け方　8. 外来語の表記　9. 数字の表記　10. 単位の表し方
+11. 記述記号の注意点　12. その他の表記の注意点
 
-幻辞(Genji)辞典が必要なルールは `manifest.json` の該当 `rules[]` に宣言する:
+本ルールセットは、このうち**機械的に判定できる外来語表記・送り仮名・仮名書きのルール**を実装しています。
 
-```json
-"requires": [{ "kind": "dict", "dictId": "genji" }]
-```
+- 発行: 日本エディタースクール / 第2版 / ISBN 978-4-88888-397-9
 
-辞典が未ダウンロードのとき、illusions は**そのルールを自動的に無効化し、日本語の警告を1回表示**する。
-`ctx.toolkit.dict` は未 ready 時に空結果を返すフェイルセーフなので、ルール側で分岐は不要。
+> 表記の判断基準を体系的に確認したい方には、原典の参照をおすすめします。
+> 購入は [Amazon の検索結果](https://www.amazon.co.jp/s?k=%E6%97%A5%E6%9C%AC%E8%AA%9E%E8%A1%A8%E8%A8%98%20%E6%97%A5%E6%9C%AC%E3%82%A8%E3%83%87%E3%82%A3%E3%82%BF%E3%83%BC%E3%82%B9%E3%82%AF%E3%83%BC%E3%83%AB)から。
 
-## テスト（必須）
+## illusions への追加
 
-`test/test-kit.ts` の `createTestContext()` が、illusions が実行時に注入するものと同等の `ctx` を提供する。
-各ルールに **positive 例→0 / negative 例→≥1** のゴールデンテストを書く。共通ゴールデンは
-`manifest.json` の `docs` 例を自動的に検証する（`test/sample-fw-exclaim.test.ts` 参照）。
+Electron 版 illusions で利用できます（Web 版は本体同梱ルールのみ）。
 
-```bash
-npm test
-```
+- **マーケットプレイス**: 本リポジトリには `illusions-ruleset` トピックが付いており、illusions が
+  自動収集します。アプリの校正設定からルールセット一覧に表示され、有効化できます。
+- **手動配置**: リリースの `dist/index.js` と `manifest.json` を
+  `~/.illusions/rulesets/com.illusions-lab.nihongo-hyouki/` に置きます。
 
-## 配布
+有効化すると、すべての校正モード（小説・公用文・ブログ・学術・SNS）で該当ルールが自動的に働きます。
 
-- **フォルダ配布**: `dist/index.js` + `manifest.json` を `~/.illusions/rulesets/<id>/` に置く。
-- **単一ファイル配布 / クローズドソース**: `npm run build:min` で難読化したり、`.illruleset` コンテナ
-  （平文ヘッダ + ペイロード）にまとめる（illusions の `docs/ruleset/closed-source.md` 参照）。
+## ライセンス
 
-## リリース
+- 本ルールセットの**コードは MIT ライセンス**です。
+- 出典の『日本語表記ルールブック』は**日本エディタースクールの著作物**です。本ルールセットは
+  書籍本文を一切複製しておらず、書籍が解説する表記の規範を独自に実装したものです。
 
-`v*` タグを push すると `.github/workflows/release.yml` が `dist/index.js` と `manifest.json` を
-ビルドして GitHub Release に添付する。
+## 開発・貢献
 
-```bash
-npm version patch && git push --follow-tags
-```
-
-## マーケットプレイスへの公開
-
-GitHub のリポジトリに **`illusions-ruleset`** という topic（トピック）を追加するだけです。これが**最も簡単な
-発布方法**です。topic を付けると、あなたのルールセットは illusions マーケットプレイスに**自動的に収集され、
-ウイルススキャンを通過したあと自動的に上市**されます。
-
-設定方法（どちらでも可）:
-
-- GitHub のリポジトリページ右上「About」横の ⚙️ → **Topics** に `illusions-ruleset` を追加。
-- または CLI:
-
-  ```bash
-  gh repo edit --add-topic illusions-ruleset
-  ```
-
-> 公開の前提: `manifest.json` の `id` / `nameJa` / `version` / `engineApi` が正しく、
-> リリース（`v*` タグ）で `dist/index.js` と `manifest.json` が添付されていること。
->
-> クローズドソースのルールセットは topic だけでは上市できません。別途 illusions team による
-> ソースコード審査が必要です（下記「ライセンス・商用利用・審査」を参照）。
-
-## ライセンス・商用利用・審査
-
-- ルールセットは**オープンソースでもクローズドソースでも構いません**。**商用利用（ruleset の販売を含む）も可能**です。
-- オープンソースの場合、**好きな OSS ライセンス**（MIT / Apache-2.0 / GPL など）を選べます。
-- **クローズドソースのプラグインを marketplace に上架する場合は、illusions team によるソースコード審査の通過が必須**です。
-  これは悪意あるコードを防ぐための措置です。
-- 提出いただいたソースコードは**審査の目的のみに使用**し、それ以外の用途には使用しません。
-- 詳細は **illusions TERM** を参照してください。
-
-## バージョン互換
-
-`manifest.json` の `engineApi` は illusions 側の `ENGINE_API_VERSION`（現在 **1**）と一致させること。
-一致しないルールセットは隔離され、警告とともに読み込まれない。
+[illusions-ruleset-template](https://github.com/illusions-lab/illusions-ruleset-template) から作成されています。
+ルールの追加・修正の手順、ビルド（`npm run check`）、テストについてはテンプレートの README と
+illusions 本体の `docs/ruleset/authoring.md` を参照してください。
