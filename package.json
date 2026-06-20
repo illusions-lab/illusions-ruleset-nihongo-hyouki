@@ -1,6 +1,6 @@
 {
   "name": "illusions-ruleset-template",
-  "version": "0.1.0",
+  "version": "0.3.0",
   "private": false,
   "description": "Template for developing an illusions 校正(lint) ruleset (1 repo = 1 ruleset).",
   "type": "module",

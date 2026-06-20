@@ -747,3 +747,509 @@ describe("nh-kana-formal-noun — lintWithTokens", () => {
     expect(rule().lint("勉強する事が大切だ", CONFIG)).toHaveLength(0);
   });
 });
+
+// ---------------------------------------------------------------------------
+// Edge-case tests — nh-katakana-wi-we-wo
+// ---------------------------------------------------------------------------
+describe("nh-katakana-wi-we-wo — edge cases", () => {
+  const rule = () =>
+    ruleset.createRules(createTestContext()).find((r) => r.id === "nh-katakana-wi-we-wo")!;
+
+  it("flags both ヰ and ヱ when they appear together", () => {
+    const issues = rule().lint("スヰフトとヱルテル。", CONFIG);
+    expect(issues.length).toBeGreaterThanOrEqual(2);
+  });
+
+  it("does not flag hiragana text without ヰ/ヱ/ヲ", () => {
+    expect(rule().lint("今日は晴れている。", CONFIG)).toHaveLength(0);
+  });
+
+  it("does not flag empty string", () => {
+    expect(rule().lint("", CONFIG)).toHaveLength(0);
+  });
+
+  it("flags ヲ even when surrounded by other katakana", () => {
+    const issues = rule().lint("ヲルポールの詩。", CONFIG);
+    expect(issues.length).toBeGreaterThan(0);
+    expect(issues[0].from).toBe(0);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Edge-case tests — nh-katakana-di-du
+// ---------------------------------------------------------------------------
+describe("nh-katakana-di-du — edge cases", () => {
+  const rule = () =>
+    ruleset.createRules(createTestContext()).find((r) => r.id === "nh-katakana-di-du")!;
+
+  it("does not flag hiragana ぢ/づ (not katakana foreign-word context)", () => {
+    // ぢ/づ in hiragana are native Japanese, not foreign katakana
+    expect(rule().lint("はなぢが出た。みずづくり。", CONFIG)).toHaveLength(0);
+  });
+
+  it("flags both ヂ and ヅ when they appear in one string", () => {
+    const issues = rule().lint("ヂャズとヅカ。", CONFIG);
+    expect(issues.length).toBe(2);
+  });
+
+  it("fix replacement for ヅ is ズ", () => {
+    const issues = rule().lint("ヅカダンサー。", CONFIG);
+    expect(issues[0].fix?.replacement).toBe("ズ");
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Edge-case tests — nh-katakana-small-ya-yu-yo
+// ---------------------------------------------------------------------------
+describe("nh-katakana-small-ya-yu-yo — edge cases", () => {
+  const rule = () =>
+    ruleset.createRules(createTestContext()).find((r) => r.id === "nh-katakana-small-ya-yu-yo")!;
+
+  it("does not flag シヤ when followed by fewer than 2 katakana (boundary)", () => {
+    // シヤ + 1字は条件 (?=[ァ-ヶー・][ァ-ヶー・]) を満たさないので除外
+    expect(rule().lint("シヤン。", CONFIG)).toHaveLength(0);
+  });
+
+  it("flags ヒユーズ → ヒューズ", () => {
+    const issues = rule().lint("ヒユーズが切れた。", CONFIG);
+    expect(issues.length).toBeGreaterThan(0);
+    expect(issues[0].fix?.replacement).toContain("ュ");
+  });
+
+  it("does not flag ヤマト (word-initial ヤ without preceding consonant kana)", () => {
+    expect(rule().lint("ヤマトを詠む。", CONFIG)).toHaveLength(0);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Edge-case tests — nh-katakana-sokuon
+// ---------------------------------------------------------------------------
+describe("nh-katakana-sokuon — edge cases", () => {
+  const rule = () =>
+    ruleset.createRules(createTestContext()).find((r) => r.id === "nh-katakana-sokuon")!;
+
+  it("flags ネツトワーク → ネットワーク", () => {
+    const issues = rule().lint("ネツトワークに接続した。", CONFIG);
+    expect(issues.length).toBeGreaterThan(0);
+    expect(issues[0].fix?.replacement).toBe("ッ");
+  });
+
+  it("does not flag word-final ツ (no following katakana)", () => {
+    // ツ at end of string has no following [ァ-ヶー], so lookbehind satisfied but lookahead fails
+    expect(rule().lint("カルカツ", CONFIG)).toHaveLength(0);
+  });
+
+  it("does not flag ツ preceded by 中黒 (compound boundary)", () => {
+    // 中黒「・」is excluded from the lookbehind [ァ-ヶー]
+    expect(rule().lint("フルーツ・ツアー", CONFIG)).toHaveLength(0);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Edge-case tests — nh-okurigana-okona-u
+// ---------------------------------------------------------------------------
+describe("nh-okurigana-okona-u — edge cases", () => {
+  const rule = () =>
+    ruleset.createRules(createTestContext()).find((r) => r.id === "nh-okurigana-okona-u")!;
+
+  it("flags 行ない (nominalized form)", () => {
+    const issues = rule().lint("正しい行ないをする。", CONFIG);
+    expect(issues.length).toBeGreaterThan(0);
+    expect(issues[0].fix?.replacement).toBe("行い");
+  });
+
+  it("flags 行なって (te-form)", () => {
+    const issues = rule().lint("式を行なって終わった。", CONFIG);
+    expect(issues.length).toBeGreaterThan(0);
+    expect(issues[0].fix?.replacement).toBe("行っ");
+  });
+
+  it("leaves 行商（ぎょうしょう）untouched (compound kanji)", () => {
+    expect(rule().lint("行商に出かけた。", CONFIG)).toHaveLength(0);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Edge-case tests — nh-okurigana-arawa-su
+// ---------------------------------------------------------------------------
+describe("nh-okurigana-arawa-su — edge cases", () => {
+  const rule = () =>
+    ruleset.createRules(createTestContext()).find((r) => r.id === "nh-okurigana-arawa-su")!;
+
+  it("flags 著わし (conjunctive form)", () => {
+    const issues = rule().lint("文章を著わして発表した。", CONFIG);
+    expect(issues.length).toBeGreaterThan(0);
+    expect(issues[0].fix?.replacement).toBe("著し");
+  });
+
+  it("flags 表わされる (passive form)", () => {
+    const issues = rule().lint("感情が表わされた絵画。", CONFIG);
+    expect(issues.length).toBeGreaterThan(0);
+    expect(issues[0].fix?.replacement).toBe("表さ");
+  });
+
+  it("leaves 表示 untouched (unrelated compound)", () => {
+    expect(rule().lint("画面に表示された。", CONFIG)).toHaveLength(0);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Edge-case tests — nh-okurigana-kotowa-ru
+// ---------------------------------------------------------------------------
+describe("nh-okurigana-kotowa-ru — edge cases", () => {
+  const rule = () =>
+    ruleset.createRules(createTestContext()).find((r) => r.id === "nh-okurigana-kotowa-ru")!;
+
+  it("flags 断わって (te-form)", () => {
+    const issues = rule().lint("申し出を断わって帰った。", CONFIG);
+    expect(issues.length).toBeGreaterThan(0);
+    expect(issues[0].fix?.replacement).toBe("断っ");
+  });
+
+  it("flags 断わられた (passive)", () => {
+    const issues = rule().lint("依頼を断わられた。", CONFIG);
+    expect(issues.length).toBeGreaterThan(0);
+    expect(issues[0].fix?.replacement).toBe("断ら");
+  });
+
+  it("leaves 断絶 untouched (unrelated compound)", () => {
+    expect(rule().lint("関係が断絶した。", CONFIG)).toHaveLength(0);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Edge-case tests — nh-kana-auxiliary-verb
+// ---------------------------------------------------------------------------
+describe("nh-kana-auxiliary-verb — edge cases", () => {
+  const rule = () =>
+    ruleset.createRules(createTestContext()).find((r) => r.id === "nh-kana-auxiliary-verb")!;
+
+  it("does not flag 見る as main verb (no preceding て)", () => {
+    expect(rule().lint("映画を見る。", CONFIG)).toHaveLength(0);
+  });
+
+  it("does not flag 目が見えた（main verb 見える）", () => {
+    expect(rule().lint("目が見えた。", CONFIG)).toHaveLength(0);
+  });
+
+  it("flags て挙げる (auxiliary)", () => {
+    const issues = rule().lint("本を貸して挙げる。", CONFIG);
+    expect(issues.length).toBeGreaterThan(0);
+  });
+
+  it("flags て貰う (auxiliary)", () => {
+    const issues = rule().lint("手伝って貰う。", CONFIG);
+    expect(issues.length).toBeGreaterThan(0);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Edge-case tests — nh-katakana-she-je
+// ---------------------------------------------------------------------------
+describe("nh-katakana-she-je — edge cases", () => {
+  const rule = () =>
+    ruleset.createRules(createTestContext()).find((r) => r.id === "nh-katakana-she-je")!;
+
+  it("flags ジエット at word start (when followed by カタカナ)", () => {
+    const issues = rule().lint("ジエットコースターに乗る。", CONFIG);
+    expect(issues.length).toBeGreaterThan(0);
+    expect(issues[0].fix?.replacement).toBe("ジェ");
+  });
+
+  it("does not flag シェ/ジェ that are already correctly small", () => {
+    expect(rule().lint("シェフが料理する。ジェットエンジン。", CONFIG)).toHaveLength(0);
+  });
+
+  it("does not flag セ in エンゼル（慣用形）", () => {
+    // エンゼル uses セ by custom, not シエ — so this rule doesn't apply
+    expect(rule().lint("エンゼルフィッシュ。", CONFIG)).toHaveLength(0);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Edge-case tests — nh-katakana-fa-fi-fe-fo
+// ---------------------------------------------------------------------------
+describe("nh-katakana-fa-fi-fe-fo — edge cases", () => {
+  const rule = () =>
+    ruleset.createRules(createTestContext()).find((r) => r.id === "nh-katakana-fa-fi-fe-fo")!;
+
+  it("flags フエンシング → フェンシング", () => {
+    const issues = rule().lint("フエンシングの試合。", CONFIG);
+    expect(issues.length).toBeGreaterThan(0);
+    expect(issues[0].fix?.replacement).toBe("フェ");
+  });
+
+  it("flags フオーク → フォーク", () => {
+    const issues = rule().lint("フオークダンスを踊る。", CONFIG);
+    expect(issues.length).toBeGreaterThan(0);
+    expect(issues[0].fix?.replacement).toBe("フォ");
+  });
+
+  it("leaves ファ/フィ/フェ/フォ untouched in all four forms", () => {
+    expect(rule().lint("ファ、フィ、フェ、フォ。", CONFIG)).toHaveLength(0);
+  });
+
+  it("does not flag フ at end of string (no following katakana)", () => {
+    expect(rule().lint("スカーフ", CONFIG)).toHaveLength(0);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Edge-case tests — nh-katakana-ti-di
+// ---------------------------------------------------------------------------
+describe("nh-katakana-ti-di — edge cases", () => {
+  const rule = () =>
+    ruleset.createRules(createTestContext()).find((r) => r.id === "nh-katakana-ti-di")!;
+
+  it("flags ボランテイア → ボランティア (テイ preceded by katakana)", () => {
+    const issues = rule().lint("ボランテイアに参加した。", CONFIG);
+    expect(issues.length).toBeGreaterThan(0);
+    expect(issues[0].fix?.replacement).toBe("ティ");
+  });
+
+  it("does not flag テイ/デイ at word-start (lookbehind requires preceding katakana)", () => {
+    // テイ/デイ at position 0 has no preceding [ァ-ヶー・] → lookbehind fails → no match.
+    // This is a known limitation; mid-word occurrences are caught correctly.
+    expect(rule().lint("テイクアウト", CONFIG)).toHaveLength(0);
+    expect(rule().lint("デイリーニュース", CONFIG)).toHaveLength(0);
+  });
+
+  it("does not flag ティ/ディ already small", () => {
+    expect(rule().lint("ティーパーティー。ディーゼルエンジン。", CONFIG)).toHaveLength(0);
+  });
+
+  it("does not flag エチケット（慣用でチ）", () => {
+    // The rule only flags テイ/デイ; エチケット has チ not テイ, so no issue
+    expect(rule().lint("エチケットを守る。", CONFIG)).toHaveLength(0);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Edge-case tests — nh-kana-formal-noun (L2)
+// ---------------------------------------------------------------------------
+describe("nh-kana-formal-noun — edge cases", () => {
+  const rule = () =>
+    ruleset.createRules(createTestContext()).find((r) => r.id === "nh-kana-formal-noun")! as unknown as MorphRule;
+
+  function tok(surface: string, pos_detail_1: string, start: number, end: number): Token {
+    return { surface, pos: "名詞", pos_detail_1, start, end } as Token;
+  }
+
+  it("does not flag 物 tagged as 一般 (substantive noun 物語)", () => {
+    const tokens = [tok("物", "一般", 0, 1)];
+    const issues = rule().lintWithTokens("物語を読む", tokens, CONFIG);
+    expect(issues).toHaveLength(0);
+  });
+
+  it("does not flag 所 tagged as 一般 (substantive noun 所属)", () => {
+    const tokens = [tok("所", "一般", 0, 1)];
+    const issues = rule().lintWithTokens("所属の確認", tokens, CONFIG);
+    expect(issues).toHaveLength(0);
+  });
+
+  it("does not flag 者（もの）— kanji 者 not in FORMAL_NOUN_MAP", () => {
+    // 者 (者) is not the same as 物; only 物 is in the map
+    const tokens = [tok("者", "非自立", 0, 1)];
+    const issues = rule().lintWithTokens("関係者", tokens, CONFIG);
+    expect(issues).toHaveLength(0);
+  });
+
+  it("position offsets are correct for 訳 mid-sentence", () => {
+    const tokens = [tok("訳", "非自立", 4, 5)];
+    const issues = rule().lintWithTokens("なのよ訳だ", tokens, CONFIG);
+    expect(issues.length).toBeGreaterThan(0);
+    expect(issues[0].from).toBe(4);
+    expect(issues[0].to).toBe(5);
+  });
+
+  it("handles multiple formal nouns in one token stream", () => {
+    const tokens = [
+      tok("事", "非自立", 3, 4),
+      tok("物", "非自立", 8, 9),
+    ];
+    const issues = rule().lintWithTokens("する事がある物だ", tokens, CONFIG);
+    expect(issues.length).toBe(2);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// L2 rule: nh-hojo-verb-l2 — lintWithTokens unit tests
+// ---------------------------------------------------------------------------
+describe("nh-hojo-verb-l2 — lintWithTokens", () => {
+  const rule = () =>
+    ruleset.createRules(createTestContext()).find((r) => r.id === "nh-hojo-verb-l2")! as unknown as MorphRule;
+
+  /** 接続助詞「て」トークンを生成 */
+  function te(start: number): Token {
+    return { surface: "て", pos: "助詞", pos_detail_1: "接続助詞", start, end: start + 1 } as Token;
+  }
+
+  /** 動詞トークンを生成（basic_form を指定） */
+  function verb(surface: string, basic_form: string, start: number): Token {
+    return {
+      surface,
+      pos: "動詞",
+      pos_detail_1: "自立",
+      basic_form,
+      start,
+      end: start + surface.length,
+    } as Token;
+  }
+
+  // --- 正例（指摘あり） ---
+
+  it("flags 行く after て (基本形)", () => {
+    // 「進んで行く」: て(4) 行く(5)
+    const tokens = [te(4), verb("行く", "行く", 5)];
+    const issues = rule().lintWithTokens("進んで行く", tokens, CONFIG);
+    expect(issues.length).toBeGreaterThan(0);
+    expect(issues[0].fix?.replacement).toBe("いく");
+    expect(issues[0].from).toBe(5);
+    expect(issues[0].to).toBe(7);
+  });
+
+  it("flags 来る after て (基本形)", () => {
+    // 「近づいて来る」: て(5) 来る(6)
+    const tokens = [te(5), verb("来る", "来る", 6)];
+    const issues = rule().lintWithTokens("近づいて来る", tokens, CONFIG);
+    expect(issues.length).toBeGreaterThan(0);
+    expect(issues[0].fix?.replacement).toBe("くる");
+  });
+
+  it("flags 行っ (活用形) after て using basic_form", () => {
+    // 「増えて行った」: て(3) 行っ(4) た(6)
+    const tokens = [te(3), verb("行っ", "行く", 4)];
+    const issues = rule().lintWithTokens("増えて行った", tokens, CONFIG);
+    expect(issues.length).toBeGreaterThan(0);
+    expect(issues[0].fix?.replacement).toBe("いく");
+  });
+
+  it("flags 来 (活用形) after て using basic_form", () => {
+    // 「変わって来た」: て(4) 来(5) た(6)
+    const tokens = [te(4), verb("来", "来る", 5)];
+    const issues = rule().lintWithTokens("変わって来た", tokens, CONFIG);
+    expect(issues.length).toBeGreaterThan(0);
+    expect(issues[0].fix?.replacement).toBe("くる");
+  });
+
+  // --- 負例（指摘なし） ---
+
+  it("does not flag 行く as main verb (no preceding て)", () => {
+    // 「図書館へ行く」: 行く は単独、直前に「て」なし
+    const tokens = [verb("行く", "行く", 5)];
+    const issues = rule().lintWithTokens("図書館へ行く", tokens, CONFIG);
+    expect(issues).toHaveLength(0);
+  });
+
+  it("does not flag 来る as main verb (no preceding て)", () => {
+    // 「春が来る」
+    const tokens = [verb("来る", "来る", 3)];
+    const issues = rule().lintWithTokens("春が来る", tokens, CONFIG);
+    expect(issues).toHaveLength(0);
+  });
+
+  it("does not flag already-kana いく after て", () => {
+    // 「進んでいく」: て(3) いく(4) — surface は平仮名
+    const tokens = [te(3), verb("いく", "行く", 4)];
+    const issues = rule().lintWithTokens("進んでいく", tokens, CONFIG);
+    expect(issues).toHaveLength(0);
+  });
+
+  it("does not flag already-kana くる after て", () => {
+    const tokens = [te(5), verb("くる", "来る", 6)];
+    const issues = rule().lintWithTokens("近づいてくる", tokens, CONFIG);
+    expect(issues).toHaveLength(0);
+  });
+
+  it("does nothing when disabled", () => {
+    const tokens = [te(4), verb("行く", "行く", 5)];
+    const issues = rule().lintWithTokens("進んで行く", tokens, { ...CONFIG, enabled: false });
+    expect(issues).toHaveLength(0);
+  });
+
+  it("lint() returns empty array (L2 stub)", () => {
+    expect(rule().lint("進んで行く", CONFIG)).toHaveLength(0);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Edge-case tests — nh-hojo-verb-l2 (L2)
+// ---------------------------------------------------------------------------
+describe("nh-hojo-verb-l2 — edge cases", () => {
+  const rule = () =>
+    ruleset.createRules(createTestContext()).find((r) => r.id === "nh-hojo-verb-l2")! as unknown as MorphRule;
+
+  function te(start: number): Token {
+    return { surface: "て", pos: "助詞", pos_detail_1: "接続助詞", start, end: start + 1 } as Token;
+  }
+
+  function verb(surface: string, basic_form: string, start: number): Token {
+    return {
+      surface,
+      pos: "動詞",
+      pos_detail_1: "自立",
+      basic_form,
+      start,
+      end: start + surface.length,
+    } as Token;
+  }
+
+  it("て接続助詞境界: 格助詞で（電車で行く）は対象外", () => {
+    // 「電車で行く」: で は格助詞（接続助詞でない）→ 検出しない
+    const de: Token = {
+      surface: "で",
+      pos: "助詞",
+      pos_detail_1: "格助詞",
+      start: 2,
+      end: 3,
+    } as Token;
+    const tokens = [de, verb("行く", "行く", 3)];
+    const issues = rule().lintWithTokens("電車で行く", tokens, CONFIG);
+    expect(issues).toHaveLength(0);
+  });
+
+  it("te 接続助詞境界: 格助詞でのあと の 来る も対象外", () => {
+    const de: Token = {
+      surface: "で",
+      pos: "助詞",
+      pos_detail_1: "格助詞",
+      start: 3,
+      end: 4,
+    } as Token;
+    const tokens = [de, verb("来る", "来る", 4)];
+    const issues = rule().lintWithTokens("どこで来る", tokens, CONFIG);
+    expect(issues).toHaveLength(0);
+  });
+
+  it("複数の補助動詞が連続するとき両方を検出", () => {
+    // 「勉強して行って来た」のように 行く → くる の順に並ぶケース
+    const teA = te(4);
+    const verbA = verb("行っ", "行く", 5);
+    const teB = te(7);
+    const verbB = verb("来", "来る", 8);
+    const tokens = [teA, verbA, teB, verbB];
+    const issues = rule().lintWithTokens("勉強して行って来た", tokens, CONFIG);
+    expect(issues.length).toBe(2);
+  });
+
+  it("本動詞の 行く に続く補助動詞でない 来る — てなし", () => {
+    // 「行くことは来ること」: どちらも本動詞
+    const tokens = [
+      verb("行く", "行く", 0),
+      verb("来る", "来る", 7),
+    ];
+    const issues = rule().lintWithTokens("行くことは来ること", tokens, CONFIG);
+    expect(issues).toHaveLength(0);
+  });
+
+  it("dedup: 同トークンが重複して渡されても1件のみ報告", () => {
+    const teToken = te(3);
+    const verbToken = verb("行く", "行く", 4);
+    // 同じペアを二度渡す（異常入力）
+    const tokens = [teToken, verbToken, teToken, verbToken];
+    const issues = rule().lintWithTokens("xxx て 行く", tokens, CONFIG);
+    // dedupe により from-to が同じ issue は1件に集約されること
+    const seen = new Set(issues.map((i) => `${i.from}-${i.to}`));
+    expect(seen.size).toBe(issues.length);
+  });
+});

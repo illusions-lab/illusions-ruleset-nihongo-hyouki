@@ -1,7 +1,7 @@
 /**
  * nh-kana-formal-noun — 形式名詞「こと・もの・ところ・わけ」は仮名書き
  *
- * 日本語表記（日本エディタースクール）第3章 漢字の用い方 §1 (p.9):
+ * 日本語表記（日本エディタースクール）第3章 漢字の用い方 §1 漢字と仮名の使用:
  *   補足的に付く部分は平仮名を用いる。例えば、形式名詞
  *   （こと、ところ、もの、わけ等）は仮名で書く。
  *
@@ -64,7 +64,7 @@ export function createNhKanaFormalNoun(ctx: RulesetContext, manifest: RulesetMan
           originalText: token.surface,
           reference: {
             standard: "日本語表記（日本エディタースクール）",
-            section: "第3章 漢字の用い方 §1 p.9",
+            section: "第3章 漢字の用い方 §1 漢字と仮名の使用",
           },
           fix: {
             label: `Replace with ${kana}`,

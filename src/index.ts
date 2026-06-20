@@ -22,6 +22,7 @@ import { createNhKatakanaSheJe } from "./rules/nh-katakana-she-je";
 import { createNhKatakanaFaFiFeFo } from "./rules/nh-katakana-fa-fi-fe-fo";
 import { createNhKatakanaTiDi } from "./rules/nh-katakana-ti-di";
 import { createNhKanaFormalNoun } from "./rules/nh-kana-formal-noun";
+import { createNhHojoVerbL2 } from "./rules/nh-hojo-verb-l2";
 
 const manifest = manifestJson as RulesetModule["manifest"];
 
@@ -42,6 +43,7 @@ const ruleset: RulesetModule = {
       createNhKatakanaFaFiFeFo(ctx, manifest),
       createNhKatakanaTiDi(ctx, manifest),
       createNhKanaFormalNoun(ctx, manifest),
+      createNhHojoVerbL2(ctx, manifest),
     ];
   },
 };

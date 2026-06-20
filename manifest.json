@@ -3,7 +3,8 @@
   "id": "com.illusions-lab.nihongo-hyouki",
   "name": "Nihongo Hyouki",
   "nameJa": "日本語表記",
-  "version": "0.2.0",
+  "publisherJa": "日本エディタースクール",
+  "version": "0.3.0",
   "engineApi": 1,
   "license": "MIT",
   "licenseUrl": "https://opensource.org/license/mit",
@@ -27,8 +28,17 @@
       "descriptionJa": "外来語表記で旧仮名遣いの「ヰ」「ヱ」「ヲ」（固有名詞を除く）は使用しません。",
       "guidelineId": "nihongo-hyouki",
       "level": "L1",
-      "defaultConfig": { "enabled": true, "severity": "warning" },
-      "applicableModes": ["novel", "official", "blog", "academic", "sns"],
+      "defaultConfig": {
+        "enabled": true,
+        "severity": "warning"
+      },
+      "applicableModes": [
+        "novel",
+        "official",
+        "blog",
+        "academic",
+        "sns"
+      ],
       "docs": {
         "positiveExample": "ウィスキーを飲む。ウェブサイトを開く。",
         "negativeExample": "スヰフトの作品を読んだ。",
@@ -41,8 +51,17 @@
       "descriptionJa": "外来語表記で「ヂ」「ヅ」（固有名詞を除く）は使用しません。「ジ」「ズ」と表記します。",
       "guidelineId": "nihongo-hyouki",
       "level": "L1",
-      "defaultConfig": { "enabled": true, "severity": "warning" },
-      "applicableModes": ["novel", "official", "blog", "academic", "sns"],
+      "defaultConfig": {
+        "enabled": true,
+        "severity": "warning"
+      },
+      "applicableModes": [
+        "novel",
+        "official",
+        "blog",
+        "academic",
+        "sns"
+      ],
       "docs": {
         "positiveExample": "ジャズの演奏を聴いた。",
         "negativeExample": "ヅカダンサーの公演があった。",
@@ -55,8 +74,17 @@
       "descriptionJa": "外来語表記の拗音に用いる「ヤ・ユ・ヨ」は小書き「ャ・ュ・ョ」にします。",
       "guidelineId": "nihongo-hyouki",
       "level": "L1",
-      "defaultConfig": { "enabled": true, "severity": "warning" },
-      "applicableModes": ["novel", "official", "blog", "academic", "sns"],
+      "defaultConfig": {
+        "enabled": true,
+        "severity": "warning"
+      },
+      "applicableModes": [
+        "novel",
+        "official",
+        "blog",
+        "academic",
+        "sns"
+      ],
       "docs": {
         "positiveExample": "シャワーを浴びた。チョコレートを食べた。",
         "negativeExample": "シヤワーを浴びた。チヨコレートを食べた。",
@@ -69,8 +97,17 @@
       "descriptionJa": "外来語表記の促音（つまる音）は小書きの「ッ」を用います。大書きの「ツ」は不可です。",
       "guidelineId": "nihongo-hyouki",
       "level": "L1",
-      "defaultConfig": { "enabled": true, "severity": "warning" },
-      "applicableModes": ["novel", "official", "blog", "academic", "sns"],
+      "defaultConfig": {
+        "enabled": true,
+        "severity": "warning"
+      },
+      "applicableModes": [
+        "novel",
+        "official",
+        "blog",
+        "academic",
+        "sns"
+      ],
       "docs": {
         "positiveExample": "バッグを持った。コップが割れた。",
         "negativeExample": "バツグを持った。コツプが割れた。",
@@ -83,8 +120,17 @@
       "descriptionJa": "英語語末の -er/-or/-ar などに当たる音は、原則として長音符「ー」を用いて表記します。",
       "guidelineId": "nihongo-hyouki",
       "level": "L1",
-      "defaultConfig": { "enabled": true, "severity": "warning" },
-      "applicableModes": ["novel", "official", "blog", "academic", "sns"],
+      "defaultConfig": {
+        "enabled": true,
+        "severity": "warning"
+      },
+      "applicableModes": [
+        "novel",
+        "official",
+        "blog",
+        "academic",
+        "sns"
+      ],
       "docs": {
         "positiveExample": "ギターの音が響いた。スキャナーを使う。プリンターで印刷する。",
         "negativeExample": "ギタの音が響いた。スキャナを使う。",
@@ -97,12 +143,21 @@
       "descriptionJa": "「行なう」は旧規程の送り仮名です。「送り仮名の付け方」（1973年）の本則は「行う」です。",
       "guidelineId": "nihongo-hyouki",
       "level": "L1",
-      "defaultConfig": { "enabled": true, "severity": "warning" },
-      "applicableModes": ["novel", "official", "blog", "academic", "sns"],
+      "defaultConfig": {
+        "enabled": true,
+        "severity": "warning"
+      },
+      "applicableModes": [
+        "novel",
+        "official",
+        "blog",
+        "academic",
+        "sns"
+      ],
       "docs": {
         "positiveExample": "検査を行う。",
         "negativeExample": "検査を行なう。",
-        "sourceReference": "日本語表記（日本エディタースクール）第7章 送り仮名の付け方 §3(許容→本則) p.32"
+        "sourceReference": "日本語表記（日本エディタースクール）第7章 送り仮名の付け方 §2(3) 活用のある語の許容"
       }
     },
     {
@@ -111,12 +166,21 @@
       "descriptionJa": "「著わす」「表わす」「現われる」は旧形です。「送り仮名の付け方」（1973年）の本則は「著す」「表す」「現れる」です。",
       "guidelineId": "nihongo-hyouki",
       "level": "L1",
-      "defaultConfig": { "enabled": true, "severity": "warning" },
-      "applicableModes": ["novel", "official", "blog", "academic", "sns"],
+      "defaultConfig": {
+        "enabled": true,
+        "severity": "warning"
+      },
+      "applicableModes": [
+        "novel",
+        "official",
+        "blog",
+        "academic",
+        "sns"
+      ],
       "docs": {
         "positiveExample": "本を著す。感情を表す。",
         "negativeExample": "本を著わす。感情を表わす。",
-        "sourceReference": "日本語表記（日本エディタースクール）第7章 送り仮名の付け方 §3 p.32"
+        "sourceReference": "日本語表記（日本エディタースクール）第7章 送り仮名の付け方 §2(3) 活用のある語の許容"
       }
     },
     {
@@ -125,12 +189,21 @@
       "descriptionJa": "「断わる」「賜わる」は旧形です。「送り仮名の付け方」（1973年）の本則は「断る」「賜る」です。",
       "guidelineId": "nihongo-hyouki",
       "level": "L1",
-      "defaultConfig": { "enabled": true, "severity": "warning" },
-      "applicableModes": ["novel", "official", "blog", "academic", "sns"],
+      "defaultConfig": {
+        "enabled": true,
+        "severity": "warning"
+      },
+      "applicableModes": [
+        "novel",
+        "official",
+        "blog",
+        "academic",
+        "sns"
+      ],
       "docs": {
         "positiveExample": "依頼を断る。",
         "negativeExample": "依頼を断わる。",
-        "sourceReference": "日本語表記（日本エディタースクール）第7章 送り仮名の付け方 §3 p.32"
+        "sourceReference": "日本語表記（日本エディタースクール）第7章 送り仮名の付け方 §2(3) 活用のある語の許容"
       }
     },
     {
@@ -139,12 +212,21 @@
       "descriptionJa": "「してあげる」「していただく」「してみる」「してしまう」など、補助動詞として使う「あげる・いただく・みる・しまう」等は仮名で書きます。",
       "guidelineId": "nihongo-hyouki",
       "level": "L1",
-      "defaultConfig": { "enabled": true, "severity": "warning" },
-      "applicableModes": ["novel", "official", "blog", "academic", "sns"],
+      "defaultConfig": {
+        "enabled": true,
+        "severity": "warning"
+      },
+      "applicableModes": [
+        "novel",
+        "official",
+        "blog",
+        "academic",
+        "sns"
+      ],
       "docs": {
         "positiveExample": "本を読んでみる。宿題をやってしまう。",
         "negativeExample": "やって見る。",
-        "sourceReference": "日本語表記（日本エディタースクール）第3章 漢字の用い方 §1 p.9"
+        "sourceReference": "日本語表記（日本エディタースクール）第3章 漢字の用い方 §1 漢字と仮名の使用"
       }
     },
     {
@@ -153,12 +235,21 @@
       "descriptionJa": "原音の「シェ」「ジェ」は、慣用を除きカタカナで「シェ」「ジェ」と書きます（「セ」「ゼ」ではありません）。固有名詞（シエラ・シエナ等）は例外とします。",
       "guidelineId": "nihongo-hyouki",
       "level": "L1",
-      "defaultConfig": { "enabled": true, "severity": "warning" },
-      "applicableModes": ["novel", "official", "blog", "academic", "sns"],
+      "defaultConfig": {
+        "enabled": true,
+        "severity": "warning"
+      },
+      "applicableModes": [
+        "novel",
+        "official",
+        "blog",
+        "academic",
+        "sns"
+      ],
       "docs": {
         "positiveExample": "シェードを下げる。ジェットエンジンの音。",
         "negativeExample": "シエードを下げる。",
-        "sourceReference": "日本語表記（日本エディタースクール）第8章 外来語の表記 §3(3)① p.39"
+        "sourceReference": "日本語表記（日本エディタースクール）第8章 外来語の表記 §3(3)①"
       }
     },
     {
@@ -167,12 +258,21 @@
       "descriptionJa": "外来語表記の「フア・フイ・フエ・フオ」（大書き母音）を「ファ・フィ・フェ・フォ」（小書き母音）に修正します。",
       "guidelineId": "nihongo-hyouki",
       "level": "L1",
-      "defaultConfig": { "enabled": true, "severity": "warning" },
-      "applicableModes": ["novel", "official", "blog", "academic", "sns"],
+      "defaultConfig": {
+        "enabled": true,
+        "severity": "warning"
+      },
+      "applicableModes": [
+        "novel",
+        "official",
+        "blog",
+        "academic",
+        "sns"
+      ],
       "docs": {
         "positiveExample": "ファイルを開く。フィルムを現像する。",
         "negativeExample": "フアイルを開く。",
-        "sourceReference": "日本語表記（日本エディタースクール）第8章 外来語の表記 §3(3)⑤ p.39"
+        "sourceReference": "日本語表記（日本エディタースクール）第8章 外来語の表記 §3(3)⑤"
       }
     },
     {
@@ -181,12 +281,21 @@
       "descriptionJa": "原音の「ティ」「ディ」は、慣用を除き「ティ」「ディ」と書きます（「チ」「ジ」ではありません）。",
       "guidelineId": "nihongo-hyouki",
       "level": "L1",
-      "defaultConfig": { "enabled": true, "severity": "warning" },
-      "applicableModes": ["novel", "official", "blog", "academic", "sns"],
+      "defaultConfig": {
+        "enabled": true,
+        "severity": "warning"
+      },
+      "applicableModes": [
+        "novel",
+        "official",
+        "blog",
+        "academic",
+        "sns"
+      ],
       "docs": {
         "positiveExample": "ティーカップを持つ。ディスプレイを見る。",
         "negativeExample": "ボランテイアに参加したパーテイーの記録。",
-        "sourceReference": "日本語表記（日本エディタースクール）第8章 外来語の表記 §3(3)④ p.39"
+        "sourceReference": "日本語表記（日本エディタースクール）第8章 外来語の表記 §3(3)④"
       }
     },
     {
@@ -195,12 +304,44 @@
       "descriptionJa": "形式名詞として用いる「事・物・所・訳」は、仮名で「こと・もの・ところ・わけ」と書きます。（L2：形態素解析）",
       "guidelineId": "nihongo-hyouki",
       "level": "L2",
-      "defaultConfig": { "enabled": true, "severity": "warning" },
-      "applicableModes": ["novel", "official", "blog", "academic", "sns"],
+      "defaultConfig": {
+        "enabled": true,
+        "severity": "warning"
+      },
+      "applicableModes": [
+        "novel",
+        "official",
+        "blog",
+        "academic",
+        "sns"
+      ],
       "docs": {
         "positiveExample": "勉強することが大切だ。",
         "negativeExample": "勉強する事が大切だ。",
-        "sourceReference": "日本語表記（日本エディタースクール）第3章 漢字の用い方 §1 p.9"
+        "sourceReference": "日本語表記（日本エディタースクール）第3章 漢字の用い方 §1 漢字と仮名の使用"
+      }
+    },
+    {
+      "ruleId": "nh-hojo-verb-l2",
+      "nameJa": "補助動詞「ていく・てくる」は仮名書き（形態素解析）",
+      "descriptionJa": "補助動詞として用いる「行く」「来る」は仮名で「いく」「くる」と書きます。接続助詞「て」の直後に現れる動詞を形態素解析で検出します。（L2：形態素解析）",
+      "guidelineId": "nihongo-hyouki",
+      "level": "L2",
+      "defaultConfig": {
+        "enabled": true,
+        "severity": "warning"
+      },
+      "applicableModes": [
+        "novel",
+        "official",
+        "blog",
+        "academic",
+        "sns"
+      ],
+      "docs": {
+        "positiveExample": "プロジェクトが進んでいく。春が近づいてくる。",
+        "negativeExample": "プロジェクトが進んで行く。春が近づいて来る。",
+        "sourceReference": "日本語表記（日本エディタースクール）第3章 漢字の用い方 §1 漢字と仮名の使用"
       }
     }
   ]
