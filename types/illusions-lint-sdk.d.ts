@@ -200,6 +200,8 @@ declare module "illusions-lint-sdk" {
     version: string;
     engineApi: number;
     license: string;
+    licenseUrl?: string;
+    purchaseUrl?: string;
     /** Maintainer contact email. REQUIRED. Used for marketplace notifications. */
     maintainerEmail: string;
     /** Shared naming prefix for every ruleId (collision avoidance). */
