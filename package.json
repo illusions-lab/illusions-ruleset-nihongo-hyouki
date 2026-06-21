@@ -1,6 +1,6 @@
 {
   "name": "illusions-ruleset-nihongo-hyouki",
-  "version": "0.4.0",
+  "version": "0.4.1",
   "private": false,
   "description": "日本語表記（日本エディタースクール）に基づく illusions 校正ルールセット。",
   "type": "module",

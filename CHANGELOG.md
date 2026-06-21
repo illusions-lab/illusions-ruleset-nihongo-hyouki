@@ -6,6 +6,13 @@
 
 ## [Unreleased]
 
+## [0.4.1] - 2026-06-21
+
+### Changed
+
+- マーケットプレイス用 OG 画像（`OG.png`）を作成。
+- `LICENSE` の著作権者を記入し、テンプレート残置を整理。
+
 ### Removed
 
 - テンプレート残置ファイル `docs/rules/sample-fw-exclaim.md` および `test/sample-fw-exclaim.test.ts` を削除。
