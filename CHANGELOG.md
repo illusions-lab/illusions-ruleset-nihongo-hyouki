@@ -6,6 +6,10 @@
 
 ## [Unreleased]
 
+### Removed
+
+- テンプレート残置ファイル `docs/rules/sample-fw-exclaim.md` および `test/sample-fw-exclaim.test.ts` を削除。
+
 ## [0.4.0] - 2026-06-20
 
 ### Changed
