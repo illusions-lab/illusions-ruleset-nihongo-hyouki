@@ -47,12 +47,54 @@ const REF = {
 
 /** 接続助詞「て」かどうかを判定（「で」は格助詞との区別が困難なため除外） */
 function isTeConjunction(t: Token): boolean {
-  return t.surface === "て" && t.pos === "助詞" && t.pos_detail_1 === "接続助詞";
+  return (
+    t.surface === "て" && t.pos === "助詞" && t.pos_detail_1 === "接続助詞"
+  );
 }
 
-export function createNhHojoVerbL2(ctx: RulesetContext, manifest: RulesetManifest): LintRule {
+const toHiragana = (value: string): string =>
+  value.replace(/[ァ-ヶ]/g, (char) =>
+    String.fromCharCode(char.charCodeAt(0) - 0x60),
+  );
+function inflectedKana(
+  tokens: ReadonlyArray<Token>,
+  index: number,
+  fallback: string,
+) {
+  const first = tokens[index];
+  let endIndex = index;
+  let replacement = first.reading ? toHiragana(first.reading) : fallback;
+  const needsSurfaceSuffix = replacement !== fallback;
+  while (endIndex + 1 < tokens.length) {
+    const next = tokens[endIndex + 1];
+    if (!(
+      (next.pos === "助動詞" ||
+        (needsSurfaceSuffix &&
+          next.pos === "助詞" &&
+          next.pos_detail_1 === "接続助詞")) &&
+      next.start === tokens[endIndex].end
+    ))
+      break;
+    replacement += next.reading ? toHiragana(next.reading) : next.surface;
+    endIndex++;
+  }
+  return {
+    replacement,
+    end: tokens[endIndex].end,
+    surface: tokens
+      .slice(index, endIndex + 1)
+      .map((token) => token.surface)
+      .join(""),
+  };
+}
+
+export function createNhHojoVerbL2(
+  ctx: RulesetContext,
+  manifest: RulesetManifest,
+): LintRule {
   const metaEntry = manifest.rules.find((r) => r.ruleId === "nh-hojo-verb-l2");
-  if (!metaEntry) throw new Error("manifest is missing the nh-hojo-verb-l2 rule");
+  if (!metaEntry)
+    throw new Error("manifest is missing the nh-hojo-verb-l2 rule");
 
   const { AbstractMorphologicalLintRule } = ctx.bases;
   const { toolkit } = ctx;
@@ -78,7 +120,11 @@ export function createNhHojoVerbL2(ctx: RulesetContext, manifest: RulesetManifes
       return [];
     }
 
-    lintWithTokens(_text: string, tokens: ReadonlyArray<Token>, config: LintRuleConfig): LintIssue[] {
+    lintWithTokens(
+      _text: string,
+      tokens: ReadonlyArray<Token>,
+      config: LintRuleConfig,
+    ): LintIssue[] {
       if (!config.enabled) return [];
       const issues: LintIssue[] = [];
 
@@ -94,26 +140,28 @@ export function createNhHojoVerbL2(ctx: RulesetContext, manifest: RulesetManifes
 
         // basic_form で補助動詞辞書を引く（活用形に依存しない）
         const basicForm = cur.basic_form ?? cur.surface;
-        const kanaForm = AUX_VERB_MAP.get(basicForm);
-        if (!kanaForm) continue;
+        const fallback = AUX_VERB_MAP.get(basicForm);
+        if (!fallback) continue;
 
         // surface が既に仮名（推奨形またはその活用形）ならスキップ
         // 仮名のみで構成されているかどうかで判定
         if (/^[ぁ-ん]+$/.test(cur.surface)) continue;
+        const inflection = inflectedKana(tokens, i, fallback);
+        if (!inflection) continue;
 
         issues.push({
           ruleId: this.id,
           severity: config.severity,
-          message: `Auxiliary verb "${cur.surface}" should be written in kana ("${kanaForm}")`,
-          messageJa: `日本語表記（日本エディタースクール）第3章 §1 に基づき、補助動詞「て${cur.surface}」の「${cur.surface}」は「${kanaForm}」と仮名書きにします。`,
+          message: `Auxiliary verb "${inflection.surface}" should be written in kana ("${inflection.replacement}")`,
+          messageJa: `日本語表記（日本エディタースクール）第3章 §1 に基づき、補助動詞「${inflection.surface}」は「${inflection.replacement}」と仮名書きにします。`,
           from: cur.start,
-          to: cur.end,
-          originalText: cur.surface,
+          to: inflection.end,
+          originalText: inflection.surface,
           reference: REF,
           fix: {
-            label: `Replace with "${kanaForm}"`,
-            labelJa: `「${kanaForm}」に変更`,
-            replacement: kanaForm,
+            label: `Replace with "${inflection.replacement}"`,
+            labelJa: `「${inflection.replacement}」に変更`,
+            replacement: inflection.replacement,
           },
         });
       }
