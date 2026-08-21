@@ -9,7 +9,11 @@ import { createTestContext, CONFIG } from "./test-kit";
 interface MorphRule {
   id: string;
   lint(text: string, config: LintRuleConfig): LintIssue[];
-  lintWithTokens(text: string, tokens: ReadonlyArray<Token>, config: LintRuleConfig): LintIssue[];
+  lintWithTokens(
+    text: string,
+    tokens: ReadonlyArray<Token>,
+    config: LintRuleConfig,
+  ): LintIssue[];
 }
 
 /**
@@ -29,7 +33,10 @@ describe("ruleset golden examples", () => {
       const rule = rules.find((r) => r.id === meta.ruleId);
 
       it("is built by createRules", () => {
-        expect(rule, `rule ${meta.ruleId} not returned by createRules`).toBeDefined();
+        expect(
+          rule,
+          `rule ${meta.ruleId} not returned by createRules`,
+        ).toBeDefined();
       });
 
       it("positive example yields no issue", () => {
@@ -38,7 +45,9 @@ describe("ruleset golden examples", () => {
 
       if (meta.level !== "L2") {
         it("negative example is flagged", () => {
-          expect(rule!.lint(meta.docs.negativeExample, CONFIG).length).toBeGreaterThan(0);
+          expect(
+            rule!.lint(meta.docs.negativeExample, CONFIG).length,
+          ).toBeGreaterThan(0);
         });
       } else {
         it.skip("negative example is flagged (L2 — tested via lintWithTokens)", () => {});
@@ -52,14 +61,20 @@ describe("ruleset golden examples", () => {
 // ---------------------------------------------------------------------------
 describe("nh-katakana-wi-we-wo — detections", () => {
   const rule = () =>
-    ruleset.createRules(createTestContext()).find((r) => r.id === "nh-katakana-wi-we-wo")!;
+    ruleset
+      .createRules(createTestContext())
+      .find((r) => r.id === "nh-katakana-wi-we-wo")!;
 
   it("flags ヰ in running text", () => {
-    expect(rule().lint("スヰフトの小説を読む。", CONFIG).length).toBeGreaterThan(0);
+    expect(
+      rule().lint("スヰフトの小説を読む。", CONFIG).length,
+    ).toBeGreaterThan(0);
   });
 
   it("flags ヱ in running text", () => {
-    expect(rule().lint("ヱルサレムへ旅した。", CONFIG).length).toBeGreaterThan(0);
+    expect(rule().lint("ヱルサレムへ旅した。", CONFIG).length).toBeGreaterThan(
+      0,
+    );
   });
 
   it("flags ヲ in running text", () => {
@@ -67,11 +82,15 @@ describe("nh-katakana-wi-we-wo — detections", () => {
   });
 
   it("leaves modern katakana untouched", () => {
-    expect(rule().lint("ウィスキーとウェブとウォッチ。", CONFIG)).toHaveLength(0);
+    expect(rule().lint("ウィスキーとウェブとウォッチ。", CONFIG)).toHaveLength(
+      0,
+    );
   });
 
   it("does nothing when disabled", () => {
-    expect(rule().lint("スヰフト", { ...CONFIG, enabled: false })).toHaveLength(0);
+    expect(rule().lint("スヰフト", { ...CONFIG, enabled: false })).toHaveLength(
+      0,
+    );
   });
 });
 
@@ -80,7 +99,9 @@ describe("nh-katakana-wi-we-wo — detections", () => {
 // ---------------------------------------------------------------------------
 describe("nh-katakana-di-du — detections", () => {
   const rule = () =>
-    ruleset.createRules(createTestContext()).find((r) => r.id === "nh-katakana-di-du")!;
+    ruleset
+      .createRules(createTestContext())
+      .find((r) => r.id === "nh-katakana-di-du")!;
 
   it("flags ヂ in katakana word", () => {
     const issues = rule().lint("ヂャズを演奏した。", CONFIG);
@@ -99,7 +120,9 @@ describe("nh-katakana-di-du — detections", () => {
   });
 
   it("does nothing when disabled", () => {
-    expect(rule().lint("ヂャズ", { ...CONFIG, enabled: false })).toHaveLength(0);
+    expect(rule().lint("ヂャズ", { ...CONFIG, enabled: false })).toHaveLength(
+      0,
+    );
   });
 });
 
@@ -108,7 +131,9 @@ describe("nh-katakana-di-du — detections", () => {
 // ---------------------------------------------------------------------------
 describe("nh-katakana-small-ya-yu-yo — detections", () => {
   const rule = () =>
-    ruleset.createRules(createTestContext()).find((r) => r.id === "nh-katakana-small-ya-yu-yo")!;
+    ruleset
+      .createRules(createTestContext())
+      .find((r) => r.id === "nh-katakana-small-ya-yu-yo")!;
 
   it("flags シヤワー → シャワー", () => {
     const issues = rule().lint("シヤワーを浴びた。", CONFIG);
@@ -129,7 +154,9 @@ describe("nh-katakana-small-ya-yu-yo — detections", () => {
   });
 
   it("leaves correct small kana untouched", () => {
-    expect(rule().lint("シャワーを浴びた。チョコレート。", CONFIG)).toHaveLength(0);
+    expect(
+      rule().lint("シャワーを浴びた。チョコレート。", CONFIG),
+    ).toHaveLength(0);
   });
 
   it("leaves standalone ヤ/ユ/ヨ (not preceded by consonant) untouched", () => {
@@ -137,7 +164,9 @@ describe("nh-katakana-small-ya-yu-yo — detections", () => {
   });
 
   it("does nothing when disabled", () => {
-    expect(rule().lint("シヤワー", { ...CONFIG, enabled: false })).toHaveLength(0);
+    expect(rule().lint("シヤワー", { ...CONFIG, enabled: false })).toHaveLength(
+      0,
+    );
   });
 });
 
@@ -146,7 +175,9 @@ describe("nh-katakana-small-ya-yu-yo — detections", () => {
 // ---------------------------------------------------------------------------
 describe("nh-katakana-sokuon — detections", () => {
   const rule = () =>
-    ruleset.createRules(createTestContext()).find((r) => r.id === "nh-katakana-sokuon")!;
+    ruleset
+      .createRules(createTestContext())
+      .find((r) => r.id === "nh-katakana-sokuon")!;
 
   it("flags バツグ → バッグ", () => {
     const issues = rule().lint("バツグを持った。", CONFIG);
@@ -169,7 +200,9 @@ describe("nh-katakana-sokuon — detections", () => {
   });
 
   it("does nothing when disabled", () => {
-    expect(rule().lint("バツグ", { ...CONFIG, enabled: false })).toHaveLength(0);
+    expect(rule().lint("バツグ", { ...CONFIG, enabled: false })).toHaveLength(
+      0,
+    );
   });
 });
 
@@ -178,7 +211,9 @@ describe("nh-katakana-sokuon — detections", () => {
 // ---------------------------------------------------------------------------
 describe("nh-katakana-chouon-er-or — detections", () => {
   const rule = () =>
-    ruleset.createRules(createTestContext()).find((r) => r.id === "nh-katakana-chouon-er-or")!;
+    ruleset
+      .createRules(createTestContext())
+      .find((r) => r.id === "nh-katakana-chouon-er-or")!;
 
   it("flags ギタ (missing ー) → ギター", () => {
     const issues = rule().lint("ギタの音が響いた。", CONFIG);
@@ -306,7 +341,9 @@ describe("nh-katakana-chouon-er-or — detections", () => {
 // ---------------------------------------------------------------------------
 describe("nh-okurigana-okona-u — detections", () => {
   const rule = () =>
-    ruleset.createRules(createTestContext()).find((r) => r.id === "nh-okurigana-okona-u")!;
+    ruleset
+      .createRules(createTestContext())
+      .find((r) => r.id === "nh-okurigana-okona-u")!;
 
   it("flags 行なう", () => {
     const issues = rule().lint("検査を行なう。", CONFIG);
@@ -325,7 +362,9 @@ describe("nh-okurigana-okona-u — detections", () => {
   });
 
   it("does nothing when disabled", () => {
-    expect(rule().lint("行なう", { ...CONFIG, enabled: false })).toHaveLength(0);
+    expect(rule().lint("行なう", { ...CONFIG, enabled: false })).toHaveLength(
+      0,
+    );
   });
 });
 
@@ -334,7 +373,9 @@ describe("nh-okurigana-okona-u — detections", () => {
 // ---------------------------------------------------------------------------
 describe("nh-okurigana-arawa-su — detections", () => {
   const rule = () =>
-    ruleset.createRules(createTestContext()).find((r) => r.id === "nh-okurigana-arawa-su")!;
+    ruleset
+      .createRules(createTestContext())
+      .find((r) => r.id === "nh-okurigana-arawa-su")!;
 
   it("flags 著わす", () => {
     const issues = rule().lint("本を著わす。", CONFIG);
@@ -356,11 +397,15 @@ describe("nh-okurigana-arawa-su — detections", () => {
   });
 
   it("leaves 著す / 表す / 現れる untouched", () => {
-    expect(rule().lint("本を著す。感情を表す。問題が現れる。", CONFIG)).toHaveLength(0);
+    expect(
+      rule().lint("本を著す。感情を表す。問題が現れる。", CONFIG),
+    ).toHaveLength(0);
   });
 
   it("does nothing when disabled", () => {
-    expect(rule().lint("著わす", { ...CONFIG, enabled: false })).toHaveLength(0);
+    expect(rule().lint("著わす", { ...CONFIG, enabled: false })).toHaveLength(
+      0,
+    );
   });
 });
 
@@ -369,7 +414,9 @@ describe("nh-okurigana-arawa-su — detections", () => {
 // ---------------------------------------------------------------------------
 describe("nh-okurigana-kotowa-ru — detections", () => {
   const rule = () =>
-    ruleset.createRules(createTestContext()).find((r) => r.id === "nh-okurigana-kotowa-ru")!;
+    ruleset
+      .createRules(createTestContext())
+      .find((r) => r.id === "nh-okurigana-kotowa-ru")!;
 
   it("flags 断わる", () => {
     const issues = rule().lint("依頼を断わる。", CONFIG);
@@ -388,7 +435,9 @@ describe("nh-okurigana-kotowa-ru — detections", () => {
   });
 
   it("does nothing when disabled", () => {
-    expect(rule().lint("断わる", { ...CONFIG, enabled: false })).toHaveLength(0);
+    expect(rule().lint("断わる", { ...CONFIG, enabled: false })).toHaveLength(
+      0,
+    );
   });
 });
 
@@ -397,7 +446,9 @@ describe("nh-okurigana-kotowa-ru — detections", () => {
 // ---------------------------------------------------------------------------
 describe("nh-kana-auxiliary-verb — detections", () => {
   const rule = () =>
-    ruleset.createRules(createTestContext()).find((r) => r.id === "nh-kana-auxiliary-verb")!;
+    ruleset
+      .createRules(createTestContext())
+      .find((r) => r.id === "nh-kana-auxiliary-verb")!;
 
   it("flags て見る (auxiliary)", () => {
     // 「て+見る」（補助動詞）を検出する（「で」は格助詞との区別が困難なため対象外）
@@ -417,7 +468,9 @@ describe("nh-kana-auxiliary-verb — detections", () => {
   });
 
   it("leaves kana form untouched", () => {
-    expect(rule().lint("本を読んでみる。宿題をやってしまう。", CONFIG)).toHaveLength(0);
+    expect(
+      rule().lint("本を読んでみる。宿題をやってしまう。", CONFIG),
+    ).toHaveLength(0);
   });
 
   it("does nothing when disabled", () => {
@@ -432,7 +485,9 @@ describe("nh-kana-auxiliary-verb — detections", () => {
 // ---------------------------------------------------------------------------
 describe("nh-katakana-she-je — detections", () => {
   const rule = () =>
-    ruleset.createRules(createTestContext()).find((r) => r.id === "nh-katakana-she-je")!;
+    ruleset
+      .createRules(createTestContext())
+      .find((r) => r.id === "nh-katakana-she-je")!;
 
   it("flags シエード → シェード", () => {
     const issues = rule().lint("シエードを下げる。", CONFIG);
@@ -447,11 +502,15 @@ describe("nh-katakana-she-je — detections", () => {
   });
 
   it("leaves シェ / ジェ untouched", () => {
-    expect(rule().lint("シェードを下げる。ジェットエンジン。", CONFIG)).toHaveLength(0);
+    expect(
+      rule().lint("シェードを下げる。ジェットエンジン。", CONFIG),
+    ).toHaveLength(0);
   });
 
   it("does nothing when disabled", () => {
-    expect(rule().lint("シエード", { ...CONFIG, enabled: false })).toHaveLength(0);
+    expect(rule().lint("シエード", { ...CONFIG, enabled: false })).toHaveLength(
+      0,
+    );
   });
 });
 
@@ -460,7 +519,9 @@ describe("nh-katakana-she-je — detections", () => {
 // ---------------------------------------------------------------------------
 describe("nh-katakana-fa-fi-fe-fo — detections", () => {
   const rule = () =>
-    ruleset.createRules(createTestContext()).find((r) => r.id === "nh-katakana-fa-fi-fe-fo")!;
+    ruleset
+      .createRules(createTestContext())
+      .find((r) => r.id === "nh-katakana-fa-fi-fe-fo")!;
 
   it("flags フアイル → ファイル", () => {
     const issues = rule().lint("フアイルを開く。", CONFIG);
@@ -475,11 +536,15 @@ describe("nh-katakana-fa-fi-fe-fo — detections", () => {
   });
 
   it("leaves ファ / フィ / フェ / フォ untouched", () => {
-    expect(rule().lint("ファイル。フィルム。フェンス。フォーク。", CONFIG)).toHaveLength(0);
+    expect(
+      rule().lint("ファイル。フィルム。フェンス。フォーク。", CONFIG),
+    ).toHaveLength(0);
   });
 
   it("does nothing when disabled", () => {
-    expect(rule().lint("フアイル", { ...CONFIG, enabled: false })).toHaveLength(0);
+    expect(rule().lint("フアイル", { ...CONFIG, enabled: false })).toHaveLength(
+      0,
+    );
   });
 });
 
@@ -488,7 +553,9 @@ describe("nh-katakana-fa-fi-fe-fo — detections", () => {
 // ---------------------------------------------------------------------------
 describe("nh-katakana-ti-di — detections", () => {
   const rule = () =>
-    ruleset.createRules(createTestContext()).find((r) => r.id === "nh-katakana-ti-di")!;
+    ruleset
+      .createRules(createTestContext())
+      .find((r) => r.id === "nh-katakana-ti-di")!;
 
   it("flags パーテイー → パーティー", () => {
     const issues = rule().lint("パーテイーに出席した。", CONFIG);
@@ -507,7 +574,9 @@ describe("nh-katakana-ti-di — detections", () => {
   });
 
   it("does nothing when disabled", () => {
-    expect(rule().lint("パーテイー", { ...CONFIG, enabled: false })).toHaveLength(0);
+    expect(
+      rule().lint("パーテイー", { ...CONFIG, enabled: false }),
+    ).toHaveLength(0);
   });
 });
 
@@ -516,7 +585,9 @@ describe("nh-katakana-ti-di — detections", () => {
 // ---------------------------------------------------------------------------
 describe("nh-katakana-sokuon — regression: exclusion word list", () => {
   const rule = () =>
-    ruleset.createRules(createTestContext()).find((r) => r.id === "nh-katakana-sokuon")!;
+    ruleset
+      .createRules(createTestContext())
+      .find((r) => r.id === "nh-katakana-sokuon")!;
 
   it("does not flag カツラ (proper katakana word)", () => {
     expect(rule().lint("カツラをかぶる。", CONFIG)).toHaveLength(0);
@@ -557,7 +628,9 @@ describe("nh-katakana-sokuon — regression: exclusion word list", () => {
 // ---------------------------------------------------------------------------
 describe("nh-katakana-chouon-er-or — regression: whitelist approach false-positive free", () => {
   const rule = () =>
-    ruleset.createRules(createTestContext()).find((r) => r.id === "nh-katakana-chouon-er-or")!;
+    ruleset
+      .createRules(createTestContext())
+      .find((r) => r.id === "nh-katakana-chouon-er-or")!;
 
   // 非 -er/-or/-ar 語（完全に対象外）
   it("does not flag コーラ (non -er/-or word)", () => {
@@ -599,7 +672,9 @@ describe("nh-katakana-chouon-er-or — regression: whitelist approach false-posi
   });
 
   it("still flags ルータ (genuinely missing ー, in whitelist)", () => {
-    expect(rule().lint("ルータの設定をした。", CONFIG).length).toBeGreaterThan(0);
+    expect(rule().lint("ルータの設定をした。", CONFIG).length).toBeGreaterThan(
+      0,
+    );
   });
 });
 
@@ -608,7 +683,9 @@ describe("nh-katakana-chouon-er-or — regression: whitelist approach false-posi
 // ---------------------------------------------------------------------------
 describe("nh-kana-auxiliary-verb — regression: instrumental で not flagged", () => {
   const rule = () =>
-    ruleset.createRules(createTestContext()).find((r) => r.id === "nh-kana-auxiliary-verb")!;
+    ruleset
+      .createRules(createTestContext())
+      .find((r) => r.id === "nh-kana-auxiliary-verb")!;
 
   it("does not flag テレビで見た（格助詞 で）", () => {
     expect(rule().lint("テレビで見た。", CONFIG)).toHaveLength(0);
@@ -628,7 +705,9 @@ describe("nh-kana-auxiliary-verb — regression: instrumental で not flagged", 
 // ---------------------------------------------------------------------------
 describe("nh-katakana-small-ya-yu-yo — regression: 和語擬態語除外", () => {
   const rule = () =>
-    ruleset.createRules(createTestContext()).find((r) => r.id === "nh-katakana-small-ya-yu-yo")!;
+    ruleset
+      .createRules(createTestContext())
+      .find((r) => r.id === "nh-katakana-small-ya-yu-yo")!;
 
   it("does not flag ニヤニヤ", () => {
     expect(rule().lint("ニヤニヤしている。", CONFIG)).toHaveLength(0);
@@ -652,7 +731,9 @@ describe("nh-katakana-small-ya-yu-yo — regression: 和語擬態語除外", () 
 // ---------------------------------------------------------------------------
 describe("nh-okurigana-arawa-su — regression: 現われれ（ば）形", () => {
   const rule = () =>
-    ruleset.createRules(createTestContext()).find((r) => r.id === "nh-okurigana-arawa-su")!;
+    ruleset
+      .createRules(createTestContext())
+      .find((r) => r.id === "nh-okurigana-arawa-su")!;
 
   it("flags 現われれば and suggests 現れれ", () => {
     const issues = rule().lint("問題が現われれば対処する。", CONFIG);
@@ -673,7 +754,9 @@ describe("nh-okurigana-arawa-su — regression: 現われれ（ば）形", () =>
 // ---------------------------------------------------------------------------
 describe("nh-katakana-she-je — regression: 固有名詞除外", () => {
   const rule = () =>
-    ruleset.createRules(createTestContext()).find((r) => r.id === "nh-katakana-she-je")!;
+    ruleset
+      .createRules(createTestContext())
+      .find((r) => r.id === "nh-katakana-she-je")!;
 
   it("does not flag シエラ（固有名詞）", () => {
     expect(rule().lint("シエラレオネへ行く。", CONFIG)).toHaveLength(0);
@@ -695,9 +778,16 @@ describe("nh-katakana-she-je — regression: 固有名詞除外", () => {
 // ---------------------------------------------------------------------------
 describe("nh-kana-formal-noun — lintWithTokens", () => {
   const rule = () =>
-    ruleset.createRules(createTestContext()).find((r) => r.id === "nh-kana-formal-noun")! as unknown as MorphRule;
+    ruleset
+      .createRules(createTestContext())
+      .find((r) => r.id === "nh-kana-formal-noun")! as unknown as MorphRule;
 
-  function tok(surface: string, pos_detail_1: string, start: number, end: number): Token {
+  function tok(
+    surface: string,
+    pos_detail_1: string,
+    start: number,
+    end: number,
+  ): Token {
     return { surface, pos: "名詞", pos_detail_1, start, end } as Token;
   }
 
@@ -739,7 +829,10 @@ describe("nh-kana-formal-noun — lintWithTokens", () => {
 
   it("does nothing when disabled", () => {
     const tokens = [tok("事", "非自立", 0, 1)];
-    const issues = rule().lintWithTokens("事だ", tokens, { ...CONFIG, enabled: false });
+    const issues = rule().lintWithTokens("事だ", tokens, {
+      ...CONFIG,
+      enabled: false,
+    });
     expect(issues).toHaveLength(0);
   });
 
@@ -753,7 +846,9 @@ describe("nh-kana-formal-noun — lintWithTokens", () => {
 // ---------------------------------------------------------------------------
 describe("nh-katakana-wi-we-wo — edge cases", () => {
   const rule = () =>
-    ruleset.createRules(createTestContext()).find((r) => r.id === "nh-katakana-wi-we-wo")!;
+    ruleset
+      .createRules(createTestContext())
+      .find((r) => r.id === "nh-katakana-wi-we-wo")!;
 
   it("flags both ヰ and ヱ when they appear together", () => {
     const issues = rule().lint("スヰフトとヱルテル。", CONFIG);
@@ -780,7 +875,9 @@ describe("nh-katakana-wi-we-wo — edge cases", () => {
 // ---------------------------------------------------------------------------
 describe("nh-katakana-di-du — edge cases", () => {
   const rule = () =>
-    ruleset.createRules(createTestContext()).find((r) => r.id === "nh-katakana-di-du")!;
+    ruleset
+      .createRules(createTestContext())
+      .find((r) => r.id === "nh-katakana-di-du")!;
 
   it("does not flag hiragana ぢ/づ (not katakana foreign-word context)", () => {
     // ぢ/づ in hiragana are native Japanese, not foreign katakana
@@ -803,7 +900,9 @@ describe("nh-katakana-di-du — edge cases", () => {
 // ---------------------------------------------------------------------------
 describe("nh-katakana-small-ya-yu-yo — edge cases", () => {
   const rule = () =>
-    ruleset.createRules(createTestContext()).find((r) => r.id === "nh-katakana-small-ya-yu-yo")!;
+    ruleset
+      .createRules(createTestContext())
+      .find((r) => r.id === "nh-katakana-small-ya-yu-yo")!;
 
   it("does not flag シヤ when followed by fewer than 2 katakana (boundary)", () => {
     // シヤ + 1字は条件 (?=[ァ-ヶー・][ァ-ヶー・]) を満たさないので除外
@@ -826,7 +925,9 @@ describe("nh-katakana-small-ya-yu-yo — edge cases", () => {
 // ---------------------------------------------------------------------------
 describe("nh-katakana-sokuon — edge cases", () => {
   const rule = () =>
-    ruleset.createRules(createTestContext()).find((r) => r.id === "nh-katakana-sokuon")!;
+    ruleset
+      .createRules(createTestContext())
+      .find((r) => r.id === "nh-katakana-sokuon")!;
 
   it("flags ネツトワーク → ネットワーク", () => {
     const issues = rule().lint("ネツトワークに接続した。", CONFIG);
@@ -850,7 +951,9 @@ describe("nh-katakana-sokuon — edge cases", () => {
 // ---------------------------------------------------------------------------
 describe("nh-okurigana-okona-u — edge cases", () => {
   const rule = () =>
-    ruleset.createRules(createTestContext()).find((r) => r.id === "nh-okurigana-okona-u")!;
+    ruleset
+      .createRules(createTestContext())
+      .find((r) => r.id === "nh-okurigana-okona-u")!;
 
   it("flags 行ない (nominalized form)", () => {
     const issues = rule().lint("正しい行ないをする。", CONFIG);
@@ -874,7 +977,9 @@ describe("nh-okurigana-okona-u — edge cases", () => {
 // ---------------------------------------------------------------------------
 describe("nh-okurigana-arawa-su — edge cases", () => {
   const rule = () =>
-    ruleset.createRules(createTestContext()).find((r) => r.id === "nh-okurigana-arawa-su")!;
+    ruleset
+      .createRules(createTestContext())
+      .find((r) => r.id === "nh-okurigana-arawa-su")!;
 
   it("flags 著わし (conjunctive form)", () => {
     const issues = rule().lint("文章を著わして発表した。", CONFIG);
@@ -898,7 +1003,9 @@ describe("nh-okurigana-arawa-su — edge cases", () => {
 // ---------------------------------------------------------------------------
 describe("nh-okurigana-kotowa-ru — edge cases", () => {
   const rule = () =>
-    ruleset.createRules(createTestContext()).find((r) => r.id === "nh-okurigana-kotowa-ru")!;
+    ruleset
+      .createRules(createTestContext())
+      .find((r) => r.id === "nh-okurigana-kotowa-ru")!;
 
   it("flags 断わって (te-form)", () => {
     const issues = rule().lint("申し出を断わって帰った。", CONFIG);
@@ -922,7 +1029,9 @@ describe("nh-okurigana-kotowa-ru — edge cases", () => {
 // ---------------------------------------------------------------------------
 describe("nh-kana-auxiliary-verb — edge cases", () => {
   const rule = () =>
-    ruleset.createRules(createTestContext()).find((r) => r.id === "nh-kana-auxiliary-verb")!;
+    ruleset
+      .createRules(createTestContext())
+      .find((r) => r.id === "nh-kana-auxiliary-verb")!;
 
   it("does not flag 見る as main verb (no preceding て)", () => {
     expect(rule().lint("映画を見る。", CONFIG)).toHaveLength(0);
@@ -948,7 +1057,9 @@ describe("nh-kana-auxiliary-verb — edge cases", () => {
 // ---------------------------------------------------------------------------
 describe("nh-katakana-she-je — edge cases", () => {
   const rule = () =>
-    ruleset.createRules(createTestContext()).find((r) => r.id === "nh-katakana-she-je")!;
+    ruleset
+      .createRules(createTestContext())
+      .find((r) => r.id === "nh-katakana-she-je")!;
 
   it("flags ジエット at word start (when followed by カタカナ)", () => {
     const issues = rule().lint("ジエットコースターに乗る。", CONFIG);
@@ -957,7 +1068,9 @@ describe("nh-katakana-she-je — edge cases", () => {
   });
 
   it("does not flag シェ/ジェ that are already correctly small", () => {
-    expect(rule().lint("シェフが料理する。ジェットエンジン。", CONFIG)).toHaveLength(0);
+    expect(
+      rule().lint("シェフが料理する。ジェットエンジン。", CONFIG),
+    ).toHaveLength(0);
   });
 
   it("does not flag セ in エンゼル（慣用形）", () => {
@@ -971,7 +1084,9 @@ describe("nh-katakana-she-je — edge cases", () => {
 // ---------------------------------------------------------------------------
 describe("nh-katakana-fa-fi-fe-fo — edge cases", () => {
   const rule = () =>
-    ruleset.createRules(createTestContext()).find((r) => r.id === "nh-katakana-fa-fi-fe-fo")!;
+    ruleset
+      .createRules(createTestContext())
+      .find((r) => r.id === "nh-katakana-fa-fi-fe-fo")!;
 
   it("flags フエンシング → フェンシング", () => {
     const issues = rule().lint("フエンシングの試合。", CONFIG);
@@ -999,7 +1114,9 @@ describe("nh-katakana-fa-fi-fe-fo — edge cases", () => {
 // ---------------------------------------------------------------------------
 describe("nh-katakana-ti-di — edge cases", () => {
   const rule = () =>
-    ruleset.createRules(createTestContext()).find((r) => r.id === "nh-katakana-ti-di")!;
+    ruleset
+      .createRules(createTestContext())
+      .find((r) => r.id === "nh-katakana-ti-di")!;
 
   it("flags ボランテイア → ボランティア (テイ preceded by katakana)", () => {
     const issues = rule().lint("ボランテイアに参加した。", CONFIG);
@@ -1015,7 +1132,9 @@ describe("nh-katakana-ti-di — edge cases", () => {
   });
 
   it("does not flag ティ/ディ already small", () => {
-    expect(rule().lint("ティーパーティー。ディーゼルエンジン。", CONFIG)).toHaveLength(0);
+    expect(
+      rule().lint("ティーパーティー。ディーゼルエンジン。", CONFIG),
+    ).toHaveLength(0);
   });
 
   it("does not flag エチケット（慣用でチ）", () => {
@@ -1029,9 +1148,16 @@ describe("nh-katakana-ti-di — edge cases", () => {
 // ---------------------------------------------------------------------------
 describe("nh-kana-formal-noun — edge cases", () => {
   const rule = () =>
-    ruleset.createRules(createTestContext()).find((r) => r.id === "nh-kana-formal-noun")! as unknown as MorphRule;
+    ruleset
+      .createRules(createTestContext())
+      .find((r) => r.id === "nh-kana-formal-noun")! as unknown as MorphRule;
 
-  function tok(surface: string, pos_detail_1: string, start: number, end: number): Token {
+  function tok(
+    surface: string,
+    pos_detail_1: string,
+    start: number,
+    end: number,
+  ): Token {
     return { surface, pos: "名詞", pos_detail_1, start, end } as Token;
   }
 
@@ -1063,10 +1189,7 @@ describe("nh-kana-formal-noun — edge cases", () => {
   });
 
   it("handles multiple formal nouns in one token stream", () => {
-    const tokens = [
-      tok("事", "非自立", 3, 4),
-      tok("物", "非自立", 8, 9),
-    ];
+    const tokens = [tok("事", "非自立", 3, 4), tok("物", "非自立", 8, 9)];
     const issues = rule().lintWithTokens("する事がある物だ", tokens, CONFIG);
     expect(issues.length).toBe(2);
   });
@@ -1077,20 +1200,34 @@ describe("nh-kana-formal-noun — edge cases", () => {
 // ---------------------------------------------------------------------------
 describe("nh-hojo-verb-l2 — lintWithTokens", () => {
   const rule = () =>
-    ruleset.createRules(createTestContext()).find((r) => r.id === "nh-hojo-verb-l2")! as unknown as MorphRule;
+    ruleset
+      .createRules(createTestContext())
+      .find((r) => r.id === "nh-hojo-verb-l2")! as unknown as MorphRule;
 
   /** 接続助詞「て」トークンを生成 */
   function te(start: number): Token {
-    return { surface: "て", pos: "助詞", pos_detail_1: "接続助詞", start, end: start + 1 } as Token;
+    return {
+      surface: "て",
+      pos: "助詞",
+      pos_detail_1: "接続助詞",
+      start,
+      end: start + 1,
+    } as Token;
   }
 
   /** 動詞トークンを生成（basic_form を指定） */
-  function verb(surface: string, basic_form: string, start: number): Token {
+  function verb(
+    surface: string,
+    basic_form: string,
+    start: number,
+    reading?: string,
+  ): Token {
     return {
       surface,
       pos: "動詞",
       pos_detail_1: "自立",
       basic_form,
+      reading,
       start,
       end: start + surface.length,
     } as Token;
@@ -1115,6 +1252,37 @@ describe("nh-hojo-verb-l2 — lintWithTokens", () => {
     expect(issues.length).toBeGreaterThan(0);
     expect(issues[0].fix?.replacement).toBe("くる");
   });
+
+  it.each([
+    ["来る", "クル", undefined, "くる"],
+    ["来", "キ", ["て", "テ", "助詞", "接続助詞"], "きて"],
+    ["来", "キ", ["た", "タ", "助動詞", "*"], "きた"],
+    ["来", "コ", ["ない", "ナイ", "助動詞", "*"], "こない"],
+    ["来", "キ", ["ます", "マス", "助動詞", "*"], "きます"],
+  ])(
+    "uses the inflected reading for %s",
+    (surface, reading, suffix, expected) => {
+      const start = 1;
+      const tokens: Token[] = [te(0), verb(surface, "来る", start, reading)];
+      if (suffix) {
+        tokens.push({
+          surface: suffix[0],
+          reading: suffix[1],
+          pos: suffix[2],
+          pos_detail_1: suffix[3],
+          start: start + surface.length,
+          end: start + surface.length + suffix[0].length,
+        } as Token);
+      }
+      const issues = rule().lintWithTokens(
+        tokens.map((token) => token.surface).join(""),
+        tokens,
+        CONFIG,
+      );
+      expect(issues[0].originalText).toBe(surface + (suffix?.[0] ?? ""));
+      expect(issues[0].fix?.replacement).toBe(expected);
+    },
+  );
 
   it("flags 行っ (活用形) after て using basic_form", () => {
     // 「増えて行った」: て(3) 行っ(4) た(6)
@@ -1163,7 +1331,10 @@ describe("nh-hojo-verb-l2 — lintWithTokens", () => {
 
   it("does nothing when disabled", () => {
     const tokens = [te(4), verb("行く", "行く", 5)];
-    const issues = rule().lintWithTokens("進んで行く", tokens, { ...CONFIG, enabled: false });
+    const issues = rule().lintWithTokens("進んで行く", tokens, {
+      ...CONFIG,
+      enabled: false,
+    });
     expect(issues).toHaveLength(0);
   });
 
@@ -1177,10 +1348,18 @@ describe("nh-hojo-verb-l2 — lintWithTokens", () => {
 // ---------------------------------------------------------------------------
 describe("nh-hojo-verb-l2 — edge cases", () => {
   const rule = () =>
-    ruleset.createRules(createTestContext()).find((r) => r.id === "nh-hojo-verb-l2")! as unknown as MorphRule;
+    ruleset
+      .createRules(createTestContext())
+      .find((r) => r.id === "nh-hojo-verb-l2")! as unknown as MorphRule;
 
   function te(start: number): Token {
-    return { surface: "て", pos: "助詞", pos_detail_1: "接続助詞", start, end: start + 1 } as Token;
+    return {
+      surface: "て",
+      pos: "助詞",
+      pos_detail_1: "接続助詞",
+      start,
+      end: start + 1,
+    } as Token;
   }
 
   function verb(surface: string, basic_form: string, start: number): Token {
@@ -1234,10 +1413,7 @@ describe("nh-hojo-verb-l2 — edge cases", () => {
 
   it("本動詞の 行く に続く補助動詞でない 来る — てなし", () => {
     // 「行くことは来ること」: どちらも本動詞
-    const tokens = [
-      verb("行く", "行く", 0),
-      verb("来る", "来る", 7),
-    ];
+    const tokens = [verb("行く", "行く", 0), verb("来る", "来る", 7)];
     const issues = rule().lintWithTokens("行くことは来ること", tokens, CONFIG);
     expect(issues).toHaveLength(0);
   });
